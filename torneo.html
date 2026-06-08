@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestor de Torneos</title>
+<style>
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --warning: #d97706;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+.container { max-width: 1400px; margin: 0 auto; padding: 16px; }
+
+/* Header */
+.header { background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+.header h1 { font-size: 1.3rem; font-weight: 700; white-space: nowrap; }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; background: #f1f5f9; border-radius: 8px; padding: 4px; }
+.tab { padding: 6px 16px; border: none; background: transparent; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all .15s; }
+.tab:hover { color: var(--text); }
+.tab.active { background: var(--card); color: var(--primary); font-weight: 600; box-shadow: var(--shadow); }
+
+/* Tab content */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Cards */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
+.card-title { font-size: .95rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+
+/* Form */
+.form-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+.form-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 110px; }
+label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; }
+input, select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; color: var(--text); background: var(--card); outline: none; transition: border-color .15s; }
+input:focus, select:focus { border-color: var(--primary); }
+input[type="number"] { max-width: 75px; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 14px; border-radius: 7px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: all .15s; white-space: nowrap; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { background: #15803d; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+.btn-ghost:hover { background: #f1f5f9; color: var(--text); }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+/* Table */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #f8fafc; padding: 7px 10px; text-align: left; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); white-space: nowrap; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; }
+td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafafa; }
+.rank { font-weight: 700; color: var(--text-muted); }
+.team-name { font-weight: 500; }
+.pts { font-weight: 700; color: var(--primary); }
+.qualify-zone td:first-child { border-left: 3px solid var(--success); }
+.relegation-zone td:first-child { border-left: 3px solid var(--danger); }
+
+/* Match list */
+.match-list { display: flex; flex-direction: column; gap: 5px; max-height: 320px; overflow-y: auto; }
+.match-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: #f8fafc; border-radius: 7px; border: 1px solid var(--border); flex-shrink: 0; }
+.match-teams { flex: 1; display: flex; align-items: center; gap: 6px; }
+.match-team { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.match-team.home { text-align: right; }
+.match-score { font-weight: 700; font-size: 14px; padding: 2px 10px; background: var(--card); border-radius: 5px; border: 1px solid var(--border); min-width: 52px; text-align: center; flex-shrink: 0; }
+
+/* Section head */
+.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.section-head h3 { font-size: .9rem; font-weight: 600; }
+
+/* Badge */
+.badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-blue { background: #eff6ff; color: var(--primary); border: 1px solid #bfdbfe; }
+.badge-green { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+.badge-yellow { background: #fffbeb; color: var(--warning); border: 1px solid #fde68a; }
+
+/* Alert */
+.alert { padding: 10px 14px; border-radius: 7px; font-size: 13px; margin-bottom: 12px; }
+.alert-info { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+
+/* Tags/chips */
+.chip { display: inline-flex; align-items: center; gap: 5px; background: #f1f5f9; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 500; }
+.chip-btn { background: none; border: none; cursor: pointer; color: var(--danger); font-size: 15px; line-height: 1; padding: 0; }
+
+/* Bracket */
+.bracket-wrap { overflow-x: auto; padding: 4px 0 12px; }
+.bracket { display: flex; align-items: flex-start; gap: 0; }
+.bracket-round { display: flex; flex-direction: column; min-width: 190px; }
+.bracket-round-title { text-align: center; font-size: 11px; font-weight: 700; color: var(--text-muted); padding: 4px 8px 8px; text-transform: uppercase; letter-spacing: .5px; }
+.bracket-matches { display: flex; flex-direction: column; flex: 1; justify-content: space-around; gap: 8px; padding: 0 0 8px; }
+.bracket-match { width: 182px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); cursor: pointer; transition: box-shadow .15s, border-color .15s; }
+.bracket-match:hover { box-shadow: var(--shadow-lg); border-color: var(--primary); }
+.bracket-slot { display: flex; align-items: center; padding: 7px 10px; gap: 8px; border-bottom: 1px solid var(--border); transition: background .15s; }
+.bracket-slot:last-child { border-bottom: none; }
+.bracket-slot.winner { background: #f0fdf4; font-weight: 700; }
+.bracket-slot.tbd { color: var(--text-muted); font-style: italic; }
+.bracket-slot-name { flex: 1; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bracket-slot-score { font-weight: 700; font-size: 13px; min-width: 22px; text-align: center; }
+.bracket-spacer { min-width: 24px; display: flex; align-items: center; justify-content: center; color: var(--border); font-size: 18px; align-self: stretch; }
+
+/* Groups grid */
+.groups-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.group-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.group-header { color: #fff; padding: 9px 14px; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: space-between; }
+.group-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.group-table th { background: #f8fafc; padding: 5px 8px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); font-size: 10px; text-transform: uppercase; }
+.group-table td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; }
+.group-table tr:last-child td { border-bottom: none; }
+.group-table .advance td:first-child { border-left: 3px solid var(--success); }
+.group-table .pts { font-weight: 700; color: var(--primary); }
+
+/* Champion card */
+.champ-card { text-align: center; padding: 24px; background: linear-gradient(135deg, #fef9c3, #fde68a); border: 2px solid #fbbf24; border-radius: var(--radius); }
+
+/* Empty state */
+.empty { text-align: center; padding: 32px 20px; color: var(--text-muted); }
+.empty-icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.modal { background: var(--card); border-radius: var(--radius); padding: 20px; width: 100%; max-width: 420px; box-shadow: var(--shadow-lg); }
+.modal-title { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.score-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.score-row:last-child { border-bottom: none; }
+.score-team { flex: 1; font-weight: 500; }
+.score-num { width: 65px; text-align: center; }
+.hidden { display: none !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+@media (max-width: 640px) {
+  .header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .tabs { width: 100%; }
+  .tab { flex: 1; text-align: center; padding: 6px 8px; font-size: 12px; }
+  .bracket-round { min-width: 155px; }
+  .bracket-match { width: 150px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏆 Gestor de Torneos</h1>
+  <nav class="tabs">
+    <button class="tab active" data-tab="liga">📊 Liga</button>
+    <button class="tab" data-tab="grupos">👥 Grupos</button>
+    <button class="tab" data-tab="eliminacion">⚔️ Eliminación</button>
+    <button class="tab" data-tab="mixto">🔀 Mixto</button>
+  </nav>
+</div>
+
+<div class="container">
+
+  <!-- ===== LIGA ===== -->
+  <section id="liga" class="tab-content active">
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <div class="card-title">⚙️ Configuración</div>
+          <div class="form-row">
+            <div class="form-group" style="min-width:160px;">
+              <label>Nombre del torneo</label>
+              <input type="text" id="ligaName" placeholder="Liga 2025" oninput="saveLiga()">
+            </div>
+            <div class="form-group" style="max-width:85px;">
+              <label>Clasifican</label>
+              <input type="number" id="ligaQualify" min="0" value="4" oninput="saveLiga();renderLigaTable()">
+            </div>
+            <div class="form-group" style="max-width:85px;">
+              <label>Descienden</label>
+              <input type="number" id="ligaRelegate" min="0" value="3" oninput="saveLiga();renderLigaTable()">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">👕 Equipos</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre</label>
+              <input type="text" id="ligaTeamInput" placeholder="Ej: Real Madrid" maxlength="40">
+            </div>
+            <button class="btn btn-primary" onclick="ligaAddTeam()">+ Agregar</button>
+          </div>
+          <div id="ligaTeamList" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚽ Cargar Partido</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Local</label>
+              <select id="ligaHome"><option value="">-- Equipo --</option></select>
+            </div>
+            <div class="form-group" style="max-width:70px;">
+              <label>Gls L</label>
+              <input type="number" id="ligaHS" min="0" value="0">
+            </div>
+            <div class="form-group" style="max-width:70px;">
+              <label>Gls V</label>
+              <input type="number" id="ligaAS" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label>Visitante</label>
+              <select id="ligaAway"><option value="">-- Equipo --</option></select>
+            </div>
+            <button class="btn btn-success" onclick="ligaAddMatch()">✓</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h3>Resultados</h3>
+            <button class="btn btn-ghost btn-sm" onclick="ligaClearMatches()">Limpiar</button>
+          </div>
+          <div id="ligaMatchList" class="match-list">
+            <div class="empty"><div class="empty-icon">📋</div><p>Sin partidos aún</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="section-head">
+            <h3>Tabla de Posiciones</h3>
+            <button class="btn btn-danger btn-sm" onclick="ligaReset()">🗑 Reiniciar</button>
+          </div>
+          <div id="ligaTable">
+            <div class="empty"><div class="empty-icon">🏆</div><p>Agregá equipos para ver la tabla</p></div>
+          </div>
+          <div id="ligaLegend" style="margin-top:8px;font-size:11px;color:var(--text-muted);display:none;">
+            <span style="color:var(--success);">■</span> Clasifican &nbsp;
+            <span style="color:var(--danger);">■</span> Descienden
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GRUPOS ===== -->
+  <section id="grupos" class="tab-content">
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <div class="card-title">⚙️ Configurar Grupos</div>
+          <div class="form-row">
+            <div class="form-group" style="min-width:150px;">
+              <label>Nombre</label>
+              <input type="text" id="gruposName" placeholder="Copa 2025" oninput="saveGrupos()">
+            </div>
+            <div class="form-group" style="max-width:85px;">
+              <label>N° Grupos</label>
+              <input type="number" id="gruposNum" min="1" max="8" value="4" oninput="saveGrupos()">
+            </div>
+            <div class="form-group" style="max-width:85px;">
+              <label>Clasifican</label>
+              <input type="number" id="gruposAdv" min="1" value="2" oninput="saveGrupos()">
+            </div>
+            <button class="btn btn-primary" onclick="gruposInit()">Crear grupos</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">👕 Agregar Equipo</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre</label>
+              <input type="text" id="gruposTeamInput" placeholder="Nombre del equipo">
+            </div>
+            <div class="form-group" style="max-width:110px;">
+              <label>Grupo</label>
+              <select id="gruposTeamGrp"></select>
+            </div>
+            <button class="btn btn-primary" onclick="gruposAddTeam()">+ Agregar</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚽ Cargar Partido</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Local</label>
+              <select id="gruposHome"><option value="">--</option></select>
+            </div>
+            <div class="form-group" style="max-width:70px;">
+              <label>Gls L</label>
+              <input type="number" id="gruposHS" min="0" value="0">
+            </div>
+            <div class="form-group" style="max-width:70px;">
+              <label>Gls V</label>
+              <input type="number" id="gruposAS" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label>Visitante</label>
+              <select id="gruposAway"><option value="">--</option></select>
+            </div>
+            <button class="btn btn-success" onclick="gruposAddMatch()">✓</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h3>Partidos</h3>
+            <button class="btn btn-ghost btn-sm" onclick="gruposClearMatches()">Limpiar</button>
+          </div>
+          <div id="gruposMatchList" class="match-list">
+            <div class="empty"><div class="empty-icon">📋</div><p>Sin partidos</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-head">
+          <h3>Grupos</h3>
+          <button class="btn btn-danger btn-sm" onclick="gruposReset()">🗑 Reiniciar</button>
+        </div>
+        <div id="gruposGrid" class="groups-grid">
+          <div class="empty"><div class="empty-icon">👥</div><p>Configurá los grupos primero</p></div>
+        </div>
+        <div class="card" style="margin-top:12px;">
+          <div class="card-title">✅ Clasificados</div>
+          <div id="gruposClassified">
+            <div class="empty" style="padding:16px;"><p>Completá los partidos para ver clasificados</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ELIMINACIÓN ===== -->
+  <section id="eliminacion" class="tab-content">
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <div class="card-title">⚙️ Configuración</div>
+          <div class="form-row">
+            <div class="form-group" style="min-width:160px;">
+              <label>Nombre</label>
+              <input type="text" id="elimName" placeholder="Copa eliminatoria" oninput="saveElim()">
+            </div>
+            <div class="form-group" style="max-width:110px;">
+              <label>N° Equipos</label>
+              <select id="elimSize" onchange="saveElim();renderElimTeams()">
+                <option value="4">4</option>
+                <option value="8">8</option>
+                <option value="16" selected>16</option>
+                <option value="32">32</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="elimInit()">Crear Bracket</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">👕 Equipos / Semillas</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre</label>
+              <input type="text" id="elimTeamInput" placeholder="Equipo o jugador">
+            </div>
+            <button class="btn btn-primary" onclick="elimAddTeam()">+ Agregar</button>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:6px;">
+            <button class="btn btn-ghost btn-sm" onclick="elimShuffleDraw()">🔀 Sortear</button>
+            <button class="btn btn-ghost btn-sm" onclick="elimClearTeams()">Limpiar lista</button>
+          </div>
+          <div id="elimTeamList" style="margin-top:10px;"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="section-head">
+            <h3>Bracket</h3>
+            <button class="btn btn-danger btn-sm" onclick="elimReset()">🗑 Reiniciar</button>
+          </div>
+          <div id="elimBracket">
+            <div class="empty"><div class="empty-icon">⚔️</div><p>Crea el bracket para comenzar</p></div>
+          </div>
+        </div>
+        <div id="elimChampCard" class="champ-card hidden">
+          <div style="font-size:2.5rem;">🏆</div>
+          <div style="font-size:1.3rem;font-weight:800;margin:6px 0;" id="elimChampName"></div>
+          <span class="badge badge-yellow" style="font-size:13px;">¡CAMPEÓN!</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MIXTO ===== -->
+  <section id="mixto" class="tab-content">
+    <div class="alert alert-info">
+      El formato <strong>Mixto</strong> toma los clasificados de la pestaña <strong>Grupos</strong> y genera automáticamente un bracket de eliminación directa. Primero configurá y jugá la fase de grupos, luego volvé aquí.
+    </div>
+
+    <div class="card">
+      <div class="section-head">
+        <h3>Estado del Torneo</h3>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="badge" id="mixtoPhase1Badge">1. Grupos</span>
+          <span style="color:var(--text-muted);">→</span>
+          <span class="badge" id="mixtoPhase2Badge" style="background:#f1f5f9;color:var(--text-muted);">2. Eliminación</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="mixtoGenerateBracket()">⚡ Generar Bracket con Clasificados</button>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <div class="card-title">✅ Clasificados de Grupos</div>
+          <div id="mixtoClassified">
+            <div class="empty" style="padding:16px;"><p>Completá la fase de grupos primero</p></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="section-head">
+            <h3>Bracket Eliminatorio</h3>
+            <button class="btn btn-danger btn-sm" onclick="mixtoResetBracket()">🗑 Resetear</button>
+          </div>
+          <div id="mixtoBracket">
+            <div class="empty"><div class="empty-icon">⚔️</div><p>Generá el bracket primero</p></div>
+          </div>
+        </div>
+        <div id="mixtoChampCard" class="champ-card hidden">
+          <div style="font-size:2.5rem;">🏆</div>
+          <div style="font-size:1.3rem;font-weight:800;margin:6px 0;" id="mixtoChampName"></div>
+          <span class="badge badge-yellow" style="font-size:13px;">¡CAMPEÓN DEL TORNEO!</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Score Modal -->
+<div class="modal-overlay hidden" id="scoreModal">
+  <div class="modal">
+    <div class="modal-title" id="scoreModalTitle">Ingresar Resultado</div>
+    <div id="scoreModalBody"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmScore()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastArea" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:6px;"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const sv = (k, v) => localStorage.setItem('t_' + k, JSON.stringify(v));
+const ld = (k, d) => { try { const r = localStorage.getItem('t_' + k); return r ? JSON.parse(r) : d; } catch { return d; } };
+
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.style.cssText = 'padding:10px 16px;border-radius:8px;font-size:13px;font-weight:500;color:#fff;opacity:1;transition:opacity .3s;pointer-events:none;';
+  el.style.background = { error: '#dc2626', success: '#16a34a', info: '#2563eb' }[type] || '#2563eb';
+  el.textContent = msg;
+  $('toastArea').appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2200);
+}
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    $(btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'mixto') renderMixto();
+  });
+});
+
+let L = ld('liga', { name: '', teams: [], matches: [], qualify: 4, relegate: 3 });
+
+function saveLiga() {
+  L.name = $('ligaName').value;
+  L.qualify = +$('ligaQualify').value || 0;
+  L.relegate = +$('ligaRelegate').value || 0;
+  sv('liga', L);
+}
+
+function ligaAddTeam() {
+  const n = $('ligaTeamInput').value.trim();
+  if (!n) return toast('Ingresá el nombre', 'error');
+  if (L.teams.includes(n)) return toast('Ese equipo ya existe', 'error');
+  L.teams.push(n);
+  $('ligaTeamInput').value = '';
+  saveLiga(); renderLiga();
+}
+
+function ligaRemoveTeam(name) {
+  if (!confirm(`¿Eliminar "${name}"? Se borrarán sus partidos.`)) return;
+  L.teams = L.teams.filter(t => t !== name);
+  L.matches = L.matches.filter(m => m.h !== name && m.a !== name);
+  saveLiga(); renderLiga();
+}
+
+function ligaAddMatch() {
+  const h = $('ligaHome').value, a = $('ligaAway').value;
+  const hs = +$('ligaHS').value, as_ = +$('ligaAS').value;
+  if (!h || !a) return toast('Seleccioná ambos equipos', 'error');
+  if (h === a) return toast('Local y visitante deben ser distintos', 'error');
+  L.matches.push({ id: Date.now(), h, a, hs, as: as_ });
+  $('ligaHS').value = $('ligaAS').value = 0;
+  saveLiga(); renderLiga();
+}
+
+function ligaDeleteMatch(id) {
+  L.matches = L.matches.filter(m => m.id !== id);
+  saveLiga(); renderLiga();
+}
+
+function ligaClearMatches() {
+  if (confirm('¿Borrar todos los resultados?')) { L.matches = []; saveLiga(); renderLiga(); }
+}
+
+function ligaReset() {
+  if (!confirm('¿Reiniciar toda la liga?')) return;
+  L = { name: '', teams: [], matches: [], qualify: 4, relegate: 3 };
+  $('ligaName').value = ''; $('ligaQualify').value = 4; $('ligaRelegate').value = 3;
+  saveLiga(); renderLiga();
+}
+
+function calcLiga() {
+  const s = {};
+  L.teams.forEach(t => s[t] = { t, pj:0, pg:0, pe:0, pp:0, gf:0, gc:0, pts:0 });
+  L.matches.forEach(m => {
+    if (!s[m.h] || !s[m.a]) return;
+    const hh = s[m.h], aa = s[m.a];
+    hh.pj++; aa.pj++;
+    hh.gf += m.hs; hh.gc += m.as;
+    aa.gf += m.as; aa.gc += m.hs;
+    if (m.hs > m.as) { hh.pg++; hh.pts += 3; aa.pp++; }
+    else if (m.hs < m.as) { aa.pg++; aa.pts += 3; hh.pp++; }
+    else { hh.pe++; aa.pe++; hh.pts++; aa.pts++; }
+  });
+  return Object.values(s).sort((a, b) => b.pts-a.pts || (b.gf-b.gc)-(a.gf-a.gc) || b.gf-a.gf || a.t.localeCompare(b.t));
+}
+
+function renderLigaTable() {
+  const st = calcLiga();
+  if (!st.length) {
+    $('ligaTable').innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>Agregá equipos</p></div>';
+    $('ligaLegend').style.display = 'none'; return;
+  }
+  const q = +$('ligaQualify').value || 0, r = +$('ligaRelegate').value || 0;
+  const n = st.length;
+  let html = '<div class="table-wrap"><table><thead><tr><th>#</th><th>Equipo</th><th title="Puntos">Pts</th><th title="PJ">PJ</th><th title="Ganados">PG</th><th title="Empatados">PE</th><th title="Perdidos">PP</th><th title="Goles a favor">GF</th><th title="Goles en contra">GC</th><th title="Diferencia">DG</th></tr></thead><tbody>';
+  st.forEach((s, i) => {
+    let cls = '';
+    if (q > 0 && i < q) cls = 'qualify-zone';
+    if (r > 0 && i >= n - r) cls = 'relegation-zone';
+    const dg = s.gf - s.gc;
+    html += `<tr class="${cls}"><td class="rank">${i+1}</td><td class="team-name">${esc(s.t)}</td><td class="pts">${s.pts}</td><td>${s.pj}</td><td>${s.pg}</td><td>${s.pe}</td><td>${s.pp}</td><td>${s.gf}</td><td>${s.gc}</td><td>${dg>0?'+':''}${dg}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+  $('ligaTable').innerHTML = html;
+  $('ligaLegend').style.display = (q > 0 || r > 0) ? 'block' : 'none';
+}
+
+function renderLigaTeams() {
+  const list = $('ligaTeamList');
+  if (!L.teams.length) { list.innerHTML = ''; }
+  else {
+    list.innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:5px;">' +
+      L.teams.map(t => `<span class="chip">${esc(t)}<button class="chip-btn" onclick="ligaRemoveTeam('${esc2(t)}')">×</button></span>`).join('') +
+    '</div>';
+  }
+  const opts = '<option value="">-- Equipo --</option>' + L.teams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  $('ligaHome').innerHTML = opts; $('ligaAway').innerHTML = opts;
+}
+
+function renderLigaMatches() {
+  const m = L.matches;
+  if (!m.length) { $('ligaMatchList').innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Sin partidos aún</p></div>'; return; }
+  $('ligaMatchList').innerHTML = [...m].reverse().slice(0,60).map(x => {
+    const w = x.hs > x.as ? 'home' : x.hs < x.as ? 'away' : 'draw';
+    return `<div class="match-item">
+      <div class="match-teams">
+        <span class="match-team home" style="${w==='home'?'font-weight:700;':''}">${esc(x.h)}</span>
+        <span class="match-score">${x.hs} - ${x.as}</span>
+        <span class="match-team" style="${w==='away'?'font-weight:700;':''}">${esc(x.a)}</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="ligaDeleteMatch(${x.id})">×</button>
+    </div>`;
+  }).join('');
+}
+
+function renderLiga() { renderLigaTeams(); renderLigaTable(); renderLigaMatches(); }
+
+let G = ld('grupos', { name: '', numGroups: 4, adv: 2, groups: [], matches: [] });
+const GRP_COLORS = ['#2563eb','#7c3aed','#db2777','#dc2626','#d97706','#16a34a','#0891b2','#059669'];
+
+function saveGrupos() {
+  G.name = $('gruposName').value;
+  G.numGroups = +$('gruposNum').value || 4;
+  G.adv = +$('gruposAdv').value || 2;
+  sv('grupos', G);
+}
+
+function gruposInit() {
+  const n = +$('gruposNum').value || 4;
+  if (G.groups.length && !confirm('¿Reinicializar grupos? Se perderán los datos actuales.')) return;
+  const letters = 'ABCDEFGH';
+  G.groups = Array.from({length: n}, (_, i) => ({ letter: letters[i] || `G${i+1}`, teams: [] }));
+  G.matches = [];
+  saveGrupos(); renderGrupos();
+  toast(`${n} grupos creados`, 'success');
+}
+
+function gruposAddTeam() {
+  const name = $('gruposTeamInput').value.trim();
+  const gi = +$('gruposTeamGrp').value;
+  if (!name) return toast('Ingresá nombre', 'error');
+  if (!G.groups.length) return toast('Creá los grupos primero', 'error');
+  if (G.groups.some(g => g.teams.includes(name))) return toast('Ese equipo ya existe', 'error');
+  G.groups[gi].teams.push(name);
+  $('gruposTeamInput').value = '';
+  saveGrupos(); renderGrupos();
+}
+
+function gruposRemoveTeam(gi, name) {
+  G.groups[gi].teams = G.groups[gi].teams.filter(t => t !== name);
+  G.matches = G.matches.filter(m => m.h !== name && m.a !== name);
+  saveGrupos(); renderGrupos();
+}
+
+function gruposAddMatch() {
+  const h = $('gruposHome').value, a = $('gruposAway').value;
+  const hs = +$('gruposHS').value, as_ = +$('gruposAS').value;
+  if (!h || !a) return toast('Seleccioná ambos equipos', 'error');
+  if (h === a) return toast('Equipos distintos', 'error');
+  const hg = G.groups.findIndex(g => g.teams.includes(h));
+  const ag = G.groups.findIndex(g => g.teams.includes(a));
+  if (hg !== ag || hg < 0) return toast('Los equipos deben ser del mismo grupo', 'error');
+  G.matches.push({ id: Date.now(), h, a, hs, as: as_, gi: hg });
+  $('gruposHS').value = $('gruposAS').value = 0;
+  saveGrupos(); renderGrupos();
+}
+
+function gruposDeleteMatch(id) {
+  G.matches = G.matches.filter(m => m.id !== id);
+  saveGrupos(); renderGrupos();
+}
+
+function gruposClearMatches() {
+  if (confirm('¿Borrar todos los partidos?')) { G.matches = []; saveGrupos(); renderGrupos(); }
+}
+
+function gruposReset() {
+  if (!confirm('¿Reiniciar fase de grupos?')) return;
+  G = { name: '', numGroups: 4, adv: 2, groups: [], matches: [] };
+  $('gruposName').value = ''; $('gruposNum').value = 4; $('gruposAdv').value = 2;
+  saveGrupos(); renderGrupos();
+}
+
+function calcGroupStandings(gi) {
+  const grp = G.groups[gi];
+  const s = {};
+  grp.teams.forEach(t => s[t] = { t, pj:0, pg:0, pe:0, pp:0, gf:0, gc:0, pts:0 });
+  G.matches.filter(m => m.gi === gi).forEach(m => {
+    if (!s[m.h] || !s[m.a]) return;
+    const hh = s[m.h], aa = s[m.a];
+    hh.pj++; aa.pj++;
+    hh.gf += m.hs; hh.gc += m.as;
+    aa.gf += m.as; aa.gc += m.hs;
+    if (m.hs > m.as) { hh.pg++; hh.pts+=3; aa.pp++; }
+    else if (m.hs < m.as) { aa.pg++; aa.pts+=3; hh.pp++; }
+    else { hh.pe++; aa.pe++; hh.pts++; aa.pts++; }
+  });
+  return Object.values(s).sort((a, b) => b.pts-a.pts || (b.gf-b.gc)-(a.gf-a.gc) || b.gf-a.gf);
+}
+
+function getGruposClassified() {
+  return G.groups.flatMap((_, i) => calcGroupStandings(i).slice(0, G.adv));
+}
+
+function renderGrupos() {
+  if (G.groups.length) {
+    $('gruposTeamGrp').innerHTML = G.groups.map((g, i) => `<option value="${i}">Grupo ${g.letter}</option>`).join('');
+    const allTeams = G.groups.flatMap(g => g.teams);
+    const opts = '<option value="">--</option>' + allTeams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+    $('gruposHome').innerHTML = opts; $('gruposAway').innerHTML = opts;
+  } else {
+    $('gruposTeamGrp').innerHTML = '';
+    $('gruposHome').innerHTML = $('gruposAway').innerHTML = '<option value="">--</option>';
+  }
+  renderGruposGrid();
+  renderGruposMatches();
+  renderGruposClassified();
+}
+
+function renderGruposGrid() {
+  if (!G.groups.length) {
+    $('gruposGrid').innerHTML = '<div class="empty"><div class="empty-icon">👥</div><p>Configurá los grupos primero</p></div>'; return;
+  }
+  $('gruposGrid').innerHTML = G.groups.map((g, gi) => {
+    const st = calcGroupStandings(gi);
+    const color = GRP_COLORS[gi % GRP_COLORS.length];
+    const rows = st.length ? st.map((s, i) => {
+      const dg = s.gf - s.gc;
+      return `<tr class="${i < G.adv ? 'advance' : ''}">
+        <td style="color:var(--text-muted);font-size:11px;">${i+1}</td>
+        <td>${esc(s.t)} <button onclick="gruposRemoveTeam(${gi},'${esc2(s.t)}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:11px;padding:0;">×</button></td>
+        <td class="pts">${s.pts}</td><td>${s.pj}</td><td>${s.gf}</td><td>${s.gc}</td>
+        <td>${dg>0?'+':''}${dg}</td>
+      </tr>`;
+    }).join('') : `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:12px;font-size:12px;">Sin equipos</td></tr>`;
+    return `<div class="group-card">
+      <div class="group-header" style="background:${color};">
+        <span>Grupo ${g.letter}</span>
+        <span style="font-size:11px;opacity:.75;">${g.teams.length} equipos</span>
+      </div>
+      <table class="group-table"><thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>PJ</th><th>GF</th><th>GC</th><th>DG</th></tr></thead><tbody>${rows}</tbody></table>
+    </div>`;
+  }).join('');
+}
+
+function renderGruposMatches() {
+  const m = G.matches;
+  if (!m.length) { $('gruposMatchList').innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Sin partidos</p></div>'; return; }
+  $('gruposMatchList').innerHTML = [...m].reverse().slice(0,60).map(x => {
+    const g = G.groups[x.gi];
+    const w = x.hs > x.as ? 'home' : x.hs < x.as ? 'away' : 'draw';
+    const color = g ? GRP_COLORS[x.gi % GRP_COLORS.length] : '#999';
+    return `<div class="match-item">
+      <span style="width:20px;height:20px;border-radius:4px;background:${color};flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">${g ? g.letter : '?'}</span>
+      <div class="match-teams">
+        <span class="match-team home" style="${w==='home'?'font-weight:700;':''}">${esc(x.h)}</span>
+        <span class="match-score">${x.hs} - ${x.as}</span>
+        <span class="match-team" style="${w==='away'?'font-weight:700;':''}">${esc(x.a)}</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="gruposDeleteMatch(${x.id})">×</button>
+    </div>`;
+  }).join('');
+}
+
+function renderGruposClassified() {
+  const cl = getGruposClassified();
+  if (!cl.length) { $('gruposClassified').innerHTML = '<div class="empty" style="padding:16px;"><p>Completá los partidos para ver clasificados</p></div>'; return; }
+  const adv = G.adv;
+  let html = '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+  G.groups.forEach((g, gi) => {
+    const st = calcGroupStandings(gi);
+    const color = GRP_COLORS[gi % GRP_COLORS.length];
+    st.slice(0, adv).forEach((s, pos) => {
+      html += `<span style="display:inline-flex;align-items:center;gap:5px;background:${color}18;border:1px solid ${color}44;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:500;">
+        <span style="width:7px;height:7px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0;"></span>
+        ${esc(s.t)} <span style="font-size:10px;color:var(--text-muted);">${g.letter}${pos+1}</span>
+      </span>`;
+    });
+  });
+  html += '</div>';
+  $('gruposClassified').innerHTML = html;
+}
+
+let E = ld('elim', { name: '', size: 16, teams: [], rounds: [] });
+let modalCtx = null;
+
+function saveElim() {
+  E.name = $('elimName').value;
+  E.size = +$('elimSize').value || 16;
+  sv('elim', E);
+}
+
+function elimAddTeam() {
+  const n = $('elimTeamInput').value.trim();
+  if (!n) return toast('Ingresá nombre', 'error');
+  if (E.teams.includes(n)) return toast('Ya existe', 'error');
+  const size = +$('elimSize').value || 16;
+  if (E.teams.length >= size) return toast(`Ya hay ${size} equipos (máximo para este bracket)`, 'error');
+  E.teams.push(n);
+  $('elimTeamInput').value = '';
+  saveElim(); renderElimTeams();
+}
+
+function elimRemoveTeam(name) {
+  E.teams = E.teams.filter(t => t !== name);
+  saveElim(); renderElimTeams();
+}
+
+function elimShuffleDraw() {
+  for (let i = E.teams.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [E.teams[i], E.teams[j]] = [E.teams[j], E.teams[i]];
+  }
+  saveElim(); renderElimTeams();
+  toast('¡Sorteo realizado!', 'success');
+}
+
+function elimClearTeams() {
+  if (confirm('¿Limpiar lista?')) { E.teams = []; saveElim(); renderElimTeams(); }
+}
+
+function elimReset() {
+  if (!confirm('¿Reiniciar bracket?')) return;
+  E.rounds = [];
+  saveElim(); renderElim();
+}
+
+function elimInit() {
+  const size = +$('elimSize').value || 16;
+  if (!confirm(`¿Crear bracket para ${size} equipos?${E.teams.length < size ? ` (${size - E.teams.length} espacios libres serán "BYE")` : ''}`)) return;
+  E.rounds = buildBracket(E.teams, size);
+  saveElim(); renderElim();
+  toast('Bracket creado', 'success');
+}
+
+function buildBracket(teamList, size) {
+  const seeded = [...teamList].slice(0, size);
+  while (seeded.length < size) seeded.push(null);
+  const r1 = [];
+  for (let i = 0; i < size; i += 2) {
+    const h = seeded[i], a = seeded[i + 1];
+    let w = null;
+    if (!h) w = a;
+    if (!a) w = h;
+    r1.push({ h, a, hs: null, as: null, w });
+  }
+  const rounds = [r1];
+  let mc = size / 4;
+  while (mc >= 1) {
+    rounds.push(Array.from({length: mc}, () => ({ h: null, a: null, hs: null, as: null, w: null })));
+    mc /= 2;
+  }
+  propagate(rounds);
+  return rounds;
+}
+
+function propagate(rounds) {
+  for (let r = 0; r < rounds.length - 1; r++) {
+    for (let m = 0; m < rounds[r].length; m++) {
+      const match = rounds[r][m];
+      if (match.w) {
+        const nm = rounds[r + 1][Math.floor(m / 2)];
+        const slot = m % 2 === 0 ? 'h' : 'a';
+        if (nm[slot] !== match.w) { nm[slot] = match.w; nm.hs = null; nm.as = null; nm.w = null; }
+        if (nm.h && !nm.a) nm.w = nm.h;
+        if (!nm.h && nm.a) nm.w = nm.a;
+      }
+    }
+  }
+}
+
+function renderElimTeams() {
+  const size = +($('elimSize').value) || 16;
+  if (!E.teams.length) { $('elimTeamList').innerHTML = ''; return; }
+  $('elimTeamList').innerHTML =
+    `<div style="margin-bottom:8px;font-size:11px;color:var(--text-muted);">${E.teams.length} / ${size} equipos</div>` +
+    '<div style="display:flex;flex-wrap:wrap;gap:5px;">' +
+    E.teams.map((t, i) => `<span class="chip"><span style="color:var(--text-muted);font-size:10px;">${i+1}.</span> ${esc(t)}<button class="chip-btn" onclick="elimRemoveTeam('${esc2(t)}')">×</button></span>`).join('') +
+    '</div>';
+}
+
+function renderElim() {
+  renderElimTeams();
+  if (!E.rounds.length) {
+    $('elimBracket').innerHTML = '<div class="empty"><div class="empty-icon">⚔️</div><p>Crea el bracket para comenzar</p></div>';
+    $('elimChampCard').classList.add('hidden'); return;
+  }
+  $('elimBracket').innerHTML = bracketHTML(E.rounds, 'elim');
+  const last = E.rounds[E.rounds.length - 1];
+  if (last && last[0] && last[0].w) {
+    $('elimChampCard').classList.remove('hidden');
+    $('elimChampName').textContent = last[0].w;
+  } else {
+    $('elimChampCard').classList.add('hidden');
+  }
+}
+
+let MX = ld('mixto', { rounds: [] });
+
+function mixtoGenerateBracket() {
+  const cl = getGruposClassified();
+  if (!cl.length) return toast('No hay clasificados. Completá la fase de grupos primero.', 'error');
+  let size = 2;
+  while (size < cl.length) size *= 2;
+  MX.rounds = buildBracket(cl.map(s => s.t), size);
+  sv('mixto', MX); renderMixto();
+  toast(`Bracket generado con ${cl.length} clasificados`, 'success');
+}
+
+function mixtoResetBracket() {
+  if (!confirm('¿Resetear bracket mixto?')) return;
+  MX.rounds = []; sv('mixto', MX); renderMixto();
+}
+
+function renderMixto() {
+  const cl = getGruposClassified();
+  if (cl.length) {
+    $('mixtoPhase1Badge').className = 'badge badge-green';
+    $('mixtoClassified').innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:5px;">' +
+      cl.map((s, i) => `<span class="chip" style="background:#f0fdf4;border:1px solid #bbf7d0;">${i+1}. ${esc(s.t)}</span>`).join('') + '</div>';
+  } else {
+    $('mixtoPhase1Badge').className = 'badge';
+    $('mixtoClassified').innerHTML = '<div class="empty" style="padding:16px;"><p>Completá la fase de grupos en la pestaña <strong>Grupos</strong></p></div>';
+  }
+
+  if (MX.rounds && MX.rounds.length) {
+    $('mixtoPhase2Badge').className = 'badge badge-blue';
+    $('mixtoBracket').innerHTML = bracketHTML(MX.rounds, 'mixto');
+    const last = MX.rounds[MX.rounds.length - 1];
+    if (last && last[0] && last[0].w) {
+      $('mixtoChampCard').classList.remove('hidden');
+      $('mixtoChampName').textContent = last[0].w;
+    } else {
+      $('mixtoChampCard').classList.add('hidden');
+    }
+  } else {
+    $('mixtoPhase2Badge').className = 'badge';
+    $('mixtoBracket').innerHTML = '<div class="empty"><div class="empty-icon">⚔️</div><p>Generá el bracket primero</p></div>';
+    $('mixtoChampCard').classList.add('hidden');
+  }
+}
+
+function roundName(total, idx) {
+  const rem = total - idx;
+  if (rem === 1) return 'Final';
+  if (rem === 2) return 'Semifinales';
+  if (rem === 3) return 'Cuartos';
+  if (rem === 4) return 'Octavos';
+  if (rem === 5) return 'Ronda 32';
+  return `Ronda ${idx + 1}`;
+}
+
+function bracketHTML(rounds, source) {
+  let html = '<div class="bracket-wrap"><div class="bracket">';
+  rounds.forEach((round, ri) => {
+    html += `<div class="bracket-round"><div class="bracket-round-title">${roundName(rounds.length, ri)}</div><div class="bracket-matches">`;
+    round.forEach((m, mi) => {
+      const hcls = m.w && m.w === m.h ? ' winner' : m.h ? '' : ' tbd';
+      const acls = m.w && m.w === m.a ? ' winner' : m.a ? '' : ' tbd';
+      html += `<div class="bracket-match" onclick="openModal('${source}',${ri},${mi})">
+        <div class="bracket-slot${hcls}"><span class="bracket-slot-name">${esc(m.h || '---')}</span><span class="bracket-slot-score">${m.hs !== null ? m.hs : ''}</span></div>
+        <div class="bracket-slot${acls}"><span class="bracket-slot-name">${esc(m.a || '---')}</span><span class="bracket-slot-score">${m.as !== null ? m.as : ''}</span></div>
+      </div>`;
+    });
+    html += '</div></div>';
+    if (ri < rounds.length - 1) html += '<div class="bracket-spacer">›</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function openModal(source, ri, mi) {
+  const rounds = source === 'mixto' ? MX.rounds : E.rounds;
+  if (!rounds || !rounds[ri]) return;
+  const m = rounds[ri][mi];
+  if (!m.h && !m.a) return toast('Partido sin equipos asignados todavía', 'error');
+  modalCtx = { source, ri, mi };
+  $('scoreModalTitle').textContent = roundName(rounds.length, ri);
+  $('scoreModalBody').innerHTML = `
+    <div class="score-row">
+      <span class="score-team">${esc(m.h || 'BYE')}</span>
+      <input type="number" class="score-num" id="mHS" min="0" value="${m.hs !== null ? m.hs : 0}" ${!m.h ? 'disabled' : ''}>
+    </div>
+    <div class="score-row">
+      <span class="score-team">${esc(m.a || 'BYE')}</span>
+      <input type="number" class="score-num" id="mAS" min="0" value="${m.as !== null ? m.as : 0}" ${!m.a ? 'disabled' : ''}>
+    </div>
+    <p style="margin-top:10px;font-size:11px;color:var(--text-muted);">En caso de empate, el equipo de arriba avanza.</p>`;
+  $('scoreModal').classList.remove('hidden');
+  setTimeout(() => $('mHS').focus(), 50);
+}
+
+function closeModal() {
+  $('scoreModal').classList.add('hidden');
+  modalCtx = null;
+}
+
+function confirmScore() {
+  if (!modalCtx) return;
+  const { source, ri, mi } = modalCtx;
+  const rounds = source === 'mixto' ? MX.rounds : E.rounds;
+  const m = rounds[ri][mi];
+  const hs = +$('mHS').value;
+  const as_ = +$('mAS').value;
+  if (isNaN(hs) || isNaN(as_) || hs < 0 || as_ < 0) return toast('Puntajes inválidos', 'error');
+  m.hs = hs; m.as = as_;
+  m.w = hs >= as_ ? m.h : m.a;
+  propagate(rounds);
+  closeModal();
+  if (source === 'mixto') { sv('mixto', MX); renderMixto(); }
+  else { saveElim(); renderElim(); }
+}
+
+$('scoreModal').addEventListener('click', e => { if (e.target === $('scoreModal')) closeModal(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && !$('scoreModal').classList.contains('hidden')) { e.preventDefault(); confirmScore(); }
+});
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function esc2(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+function onEnter(id, fn) { $(id).addEventListener('keydown', e => e.key === 'Enter' && fn()); }
+onEnter('ligaTeamInput', ligaAddTeam);
+onEnter('gruposTeamInput', gruposAddTeam);
+onEnter('elimTeamInput', elimAddTeam);
+
+(function init() {
+  if (L.name) $('ligaName').value = L.name;
+  $('ligaQualify').value = L.qualify ?? 4;
+  $('ligaRelegate').value = L.relegate ?? 3;
+  renderLiga();
+
+  if (G.name) $('gruposName').value = G.name;
+  $('gruposNum').value = G.numGroups || 4;
+  $('gruposAdv').value = G.adv || 2;
+  renderGrupos();
+
+  if (E.name) $('elimName').value = E.name;
+  if (E.size) $('elimSize').value = E.size;
+  renderElim();
+})();
+</script>
+</body>
+</html>
