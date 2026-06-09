@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis Apps</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.wrap { width: 100%; max-width: 520px; }
+h1 { font-size: 1.8rem; font-weight: 800; text-align: center; margin-bottom: 6px; }
+.sub { text-align: center; color: #94a3b8; font-size: 14px; margin-bottom: 28px; }
+.app-card { display: flex; align-items: center; gap: 16px; background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 18px 20px; margin-bottom: 12px; text-decoration: none; color: inherit; transition: transform .15s, border-color .15s, background .15s; }
+.app-card:hover { transform: translateY(-2px); border-color: #3b82f6; background: #243144; }
+.app-icon { font-size: 2.2rem; flex-shrink: 0; }
+.app-info h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 2px; }
+.app-info p { font-size: 13px; color: #94a3b8; }
+.app-arrow { margin-left: auto; color: #64748b; font-size: 1.4rem; }
+.footer { text-align: center; color: #475569; font-size: 12px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🚀 Mis Apps</h1>
+  <p class="sub">Elegí una herramienta para empezar</p>
+
+  <a class="app-card" href="torneo.html">
+    <span class="app-icon">🏆</span>
+    <div class="app-info">
+      <h2>Gestor de Torneos</h2>
+      <p>Ligas, grupos, llaves de eliminación y formato mixto</p>
+    </div>
+    <span class="app-arrow">›</span>
+  </a>
+
+  <a class="app-card" href="panel-gastos.html">
+    <span class="app-icon">💰</span>
+    <div class="app-info">
+      <h2>Panel de Gastos</h2>
+      <p>Control de gastos e ingresos personales</p>
+    </div>
+    <span class="app-arrow">›</span>
+  </a>
+
+  <p class="footer">Funciona en cualquier celular o computadora</p>
+</div>
+</body>
+</html>
