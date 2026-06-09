@@ -70,12 +70,29 @@ table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th { background: #f8fafc; padding: 7px 10px; text-align: left; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); white-space: nowrap; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; }
 td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: #fafafa; }
 .rank { font-weight: 700; color: var(--text-muted); }
 .team-name { font-weight: 500; }
 .pts { font-weight: 700; color: var(--primary); }
 .qualify-zone td:first-child { border-left: 3px solid var(--success); }
 .relegation-zone td:first-child { border-left: 3px solid var(--danger); }
+
+/* Roster (Excel-like) table */
+.roster-table { width: 100%; border-collapse: collapse; }
+.roster-table th { background: #f8fafc; padding: 6px 8px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.roster-table td { padding: 3px 4px; border-bottom: 1px solid #f1f5f9; }
+.roster-table tr:last-child td { border-bottom: none; }
+.roster-num { width: 34px; text-align: center; color: var(--text-muted); font-size: 12px; }
+.roster-table input, .roster-table select { width: 100%; min-width: 80px; border: 1px solid transparent; background: transparent; padding: 7px 8px; font-size: 13px; border-radius: 5px; max-width: none; }
+.roster-table input:hover, .roster-table select:hover { border-color: var(--border); }
+.roster-table input:focus, .roster-table select:focus { border-color: var(--primary); background: #fff; }
+.roster-del { width: 36px; text-align: center; }
+.roster-del button { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; line-height: 1; padding: 4px 8px; border-radius: 5px; }
+.roster-del button:hover { background: #fef2f2; color: var(--danger); }
+.roster-empty { text-align: center; color: var(--text-muted); padding: 18px; font-size: 13px; }
+.roster-count { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+.add-row-btn { margin-top: 8px; }
+.step-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.hint { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
 
 /* Match list */
 .match-list { display: flex; flex-direction: column; gap: 5px; max-height: 320px; overflow-y: auto; }
@@ -99,9 +116,8 @@ tr:hover td { background: #fafafa; }
 .alert { padding: 10px 14px; border-radius: 7px; font-size: 13px; margin-bottom: 12px; }
 .alert-info { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
 
-/* Tags/chips */
+/* Chips */
 .chip { display: inline-flex; align-items: center; gap: 5px; background: #f1f5f9; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 500; }
-.chip-btn { background: none; border: none; cursor: pointer; color: var(--danger); font-size: 15px; line-height: 1; padding: 0; }
 
 /* Bracket */
 .bracket-wrap { overflow-x: auto; padding: 4px 0 12px; }
@@ -148,7 +164,6 @@ tr:hover td { background: #fafafa; }
 .score-num { width: 65px; text-align: center; }
 .hidden { display: none !important; }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
@@ -181,53 +196,54 @@ tr:hover td { background: #fafafa; }
     <div class="grid-2">
       <div>
         <div class="card">
-          <div class="card-title">⚙️ Configuración</div>
+          <div class="card-title"><span class="step-badge">1</span> Participantes</div>
+          <p class="hint">Escribí los jugadores en la tabla, como en Excel. Nombre y apellido en columnas separadas.</p>
+          <div class="table-wrap">
+            <table class="roster-table">
+              <thead><tr><th class="roster-num">#</th><th>Nombre</th><th>Apellido</th><th></th></tr></thead>
+              <tbody id="ligaRosterBody"></tbody>
+            </table>
+          </div>
+          <button class="btn btn-ghost btn-sm add-row-btn" onclick="ligaAddPlayer()">+ Agregar participante</button>
+          <div class="roster-count" id="ligaCount"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="step-badge">2</span> Configuración</div>
           <div class="form-row">
             <div class="form-group" style="min-width:160px;">
               <label>Nombre del torneo</label>
               <input type="text" id="ligaName" placeholder="Liga 2025" oninput="saveLiga()">
             </div>
-            <div class="form-group" style="max-width:85px;">
+            <div class="form-group" style="max-width:90px;">
               <label>Clasifican</label>
               <input type="number" id="ligaQualify" min="0" value="4" oninput="saveLiga();renderLigaTable()">
             </div>
-            <div class="form-group" style="max-width:85px;">
+            <div class="form-group" style="max-width:90px;">
               <label>Descienden</label>
-              <input type="number" id="ligaRelegate" min="0" value="3" oninput="saveLiga();renderLigaTable()">
+              <input type="number" id="ligaRelegate" min="0" value="0" oninput="saveLiga();renderLigaTable()">
             </div>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-title">👕 Equipos</div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Nombre</label>
-              <input type="text" id="ligaTeamInput" placeholder="Ej: Real Madrid" maxlength="40">
-            </div>
-            <button class="btn btn-primary" onclick="ligaAddTeam()">+ Agregar</button>
-          </div>
-          <div id="ligaTeamList" style="margin-top:10px;"></div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">⚽ Cargar Partido</div>
+          <div class="card-title"><span class="step-badge">3</span> Cargar partido</div>
           <div class="form-row">
             <div class="form-group">
               <label>Local</label>
-              <select id="ligaHome"><option value="">-- Equipo --</option></select>
+              <select id="ligaHome"></select>
             </div>
             <div class="form-group" style="max-width:70px;">
-              <label>Gls L</label>
+              <label>Goles</label>
               <input type="number" id="ligaHS" min="0" value="0">
             </div>
             <div class="form-group" style="max-width:70px;">
-              <label>Gls V</label>
+              <label>Goles</label>
               <input type="number" id="ligaAS" min="0" value="0">
             </div>
             <div class="form-group">
               <label>Visitante</label>
-              <select id="ligaAway"><option value="">-- Equipo --</option></select>
+              <select id="ligaAway"></select>
             </div>
             <button class="btn btn-success" onclick="ligaAddMatch()">✓</button>
           </div>
@@ -251,7 +267,7 @@ tr:hover td { background: #fafafa; }
             <button class="btn btn-danger btn-sm" onclick="ligaReset()">🗑 Reiniciar</button>
           </div>
           <div id="ligaTable">
-            <div class="empty"><div class="empty-icon">🏆</div><p>Agregá equipos para ver la tabla</p></div>
+            <div class="empty"><div class="empty-icon">🏆</div><p>Agregá participantes para ver la tabla</p></div>
           </div>
           <div id="ligaLegend" style="margin-top:8px;font-size:11px;color:var(--text-muted);display:none;">
             <span style="color:var(--success);">■</span> Clasifican &nbsp;
@@ -267,57 +283,60 @@ tr:hover td { background: #fafafa; }
     <div class="grid-2">
       <div>
         <div class="card">
-          <div class="card-title">⚙️ Configurar Grupos</div>
+          <div class="card-title"><span class="step-badge">1</span> Configurar</div>
           <div class="form-row">
             <div class="form-group" style="min-width:150px;">
               <label>Nombre</label>
               <input type="text" id="gruposName" placeholder="Copa 2025" oninput="saveGrupos()">
             </div>
-            <div class="form-group" style="max-width:85px;">
+            <div class="form-group" style="max-width:90px;">
               <label>N° Grupos</label>
-              <input type="number" id="gruposNum" min="1" max="8" value="4" oninput="saveGrupos()">
+              <input type="number" id="gruposNum" min="1" max="8" value="4" oninput="saveGrupos();gruposRenderRoster();gruposRefresh()">
             </div>
-            <div class="form-group" style="max-width:85px;">
+            <div class="form-group" style="max-width:90px;">
               <label>Clasifican</label>
-              <input type="number" id="gruposAdv" min="1" value="2" oninput="saveGrupos()">
+              <input type="number" id="gruposAdv" min="1" value="2" oninput="saveGrupos();gruposRefresh()">
             </div>
-            <button class="btn btn-primary" onclick="gruposInit()">Crear grupos</button>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-title">👕 Agregar Equipo</div>
+          <div class="card-title"><span class="step-badge">2</span> Participantes</div>
+          <p class="hint">Cargá los jugadores y asignales un grupo en cada fila.</p>
+          <div class="table-wrap">
+            <table class="roster-table">
+              <thead><tr><th class="roster-num">#</th><th>Nombre</th><th>Apellido</th><th>Grupo</th><th></th></tr></thead>
+              <tbody id="gruposRosterBody"></tbody>
+            </table>
+          </div>
+          <button class="btn btn-ghost btn-sm add-row-btn" onclick="gruposAddPlayer()">+ Agregar participante</button>
+          <div class="roster-count" id="gruposCount"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="step-badge">3</span> Cargar partido</div>
           <div class="form-row">
-            <div class="form-group">
-              <label>Nombre</label>
-              <input type="text" id="gruposTeamInput" placeholder="Nombre del equipo">
-            </div>
-            <div class="form-group" style="max-width:110px;">
+            <div class="form-group" style="max-width:130px;">
               <label>Grupo</label>
-              <select id="gruposTeamGrp"></select>
+              <select id="gruposMatchGrp" onchange="gruposFillMatchSelects()"></select>
             </div>
-            <button class="btn btn-primary" onclick="gruposAddTeam()">+ Agregar</button>
           </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">⚽ Cargar Partido</div>
-          <div class="form-row">
+          <div class="form-row" style="margin-top:8px;">
             <div class="form-group">
               <label>Local</label>
-              <select id="gruposHome"><option value="">--</option></select>
+              <select id="gruposHome"></select>
             </div>
             <div class="form-group" style="max-width:70px;">
-              <label>Gls L</label>
+              <label>Goles</label>
               <input type="number" id="gruposHS" min="0" value="0">
             </div>
             <div class="form-group" style="max-width:70px;">
-              <label>Gls V</label>
+              <label>Goles</label>
               <input type="number" id="gruposAS" min="0" value="0">
             </div>
             <div class="form-group">
               <label>Visitante</label>
-              <select id="gruposAway"><option value="">--</option></select>
+              <select id="gruposAway"></select>
             </div>
             <button class="btn btn-success" onclick="gruposAddMatch()">✓</button>
           </div>
@@ -340,7 +359,7 @@ tr:hover td { background: #fafafa; }
           <button class="btn btn-danger btn-sm" onclick="gruposReset()">🗑 Reiniciar</button>
         </div>
         <div id="gruposGrid" class="groups-grid">
-          <div class="empty"><div class="empty-icon">👥</div><p>Configurá los grupos primero</p></div>
+          <div class="empty"><div class="empty-icon">👥</div><p>Agregá participantes para ver los grupos</p></div>
         </div>
         <div class="card" style="margin-top:12px;">
           <div class="card-title">✅ Clasificados</div>
@@ -357,50 +376,42 @@ tr:hover td { background: #fafafa; }
     <div class="grid-2">
       <div>
         <div class="card">
-          <div class="card-title">⚙️ Configuración</div>
+          <div class="card-title"><span class="step-badge">1</span> Participantes</div>
+          <p class="hint">El orden define los cruces de la llave. Usá «Sortear» para mezclarlos al azar.</p>
+          <div class="table-wrap">
+            <table class="roster-table">
+              <thead><tr><th class="roster-num">#</th><th>Nombre</th><th>Apellido</th><th></th></tr></thead>
+              <tbody id="elimRosterBody"></tbody>
+            </table>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="elimAddPlayer()">+ Agregar participante</button>
+            <button class="btn btn-ghost btn-sm" onclick="elimShuffle()">🔀 Sortear</button>
+          </div>
+          <div class="roster-count" id="elimCount"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="step-badge">2</span> Crear llave</div>
           <div class="form-row">
             <div class="form-group" style="min-width:160px;">
               <label>Nombre</label>
               <input type="text" id="elimName" placeholder="Copa eliminatoria" oninput="saveElim()">
             </div>
-            <div class="form-group" style="max-width:110px;">
-              <label>N° Equipos</label>
-              <select id="elimSize" onchange="saveElim();renderElimTeams()">
-                <option value="4">4</option>
-                <option value="8">8</option>
-                <option value="16" selected>16</option>
-                <option value="32">32</option>
-              </select>
-            </div>
-            <button class="btn btn-primary" onclick="elimInit()">Crear Bracket</button>
+            <button class="btn btn-primary" onclick="elimInit()">⚔️ Crear llave</button>
           </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">👕 Equipos / Semillas</div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Nombre</label>
-              <input type="text" id="elimTeamInput" placeholder="Equipo o jugador">
-            </div>
-            <button class="btn btn-primary" onclick="elimAddTeam()">+ Agregar</button>
-          </div>
-          <div style="margin-top:8px;display:flex;gap:6px;">
-            <button class="btn btn-ghost btn-sm" onclick="elimShuffleDraw()">🔀 Sortear</button>
-            <button class="btn btn-ghost btn-sm" onclick="elimClearTeams()">Limpiar lista</button>
-          </div>
-          <div id="elimTeamList" style="margin-top:10px;"></div>
+          <div id="elimSizeHint" class="hint" style="margin-top:10px;margin-bottom:0;"></div>
         </div>
       </div>
 
       <div>
         <div class="card">
           <div class="section-head">
-            <h3>Bracket</h3>
-            <button class="btn btn-danger btn-sm" onclick="elimReset()">🗑 Reiniciar</button>
+            <h3>Llave (cuadro)</h3>
+            <button class="btn btn-danger btn-sm" onclick="elimReset()">🗑 Borrar llave</button>
           </div>
           <div id="elimBracket">
-            <div class="empty"><div class="empty-icon">⚔️</div><p>Crea el bracket para comenzar</p></div>
+            <div class="empty"><div class="empty-icon">⚔️</div><p>Cargá participantes y tocá «Crear llave»</p></div>
           </div>
         </div>
         <div id="elimChampCard" class="champ-card hidden">
@@ -415,7 +426,7 @@ tr:hover td { background: #fafafa; }
   <!-- ===== MIXTO ===== -->
   <section id="mixto" class="tab-content">
     <div class="alert alert-info">
-      El formato <strong>Mixto</strong> toma los clasificados de la pestaña <strong>Grupos</strong> y genera automáticamente un bracket de eliminación directa. Primero configurá y jugá la fase de grupos, luego volvé aquí.
+      El formato <strong>Mixto</strong> toma los clasificados de la pestaña <strong>Grupos</strong> y genera automáticamente una llave de eliminación directa. Primero completá la fase de grupos, luego volvé aquí.
     </div>
 
     <div class="card">
@@ -427,7 +438,7 @@ tr:hover td { background: #fafafa; }
           <span class="badge" id="mixtoPhase2Badge" style="background:#f1f5f9;color:var(--text-muted);">2. Eliminación</span>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="mixtoGenerateBracket()">⚡ Generar Bracket con Clasificados</button>
+      <button class="btn btn-primary" onclick="mixtoGenerateBracket()">⚡ Generar llave con clasificados</button>
     </div>
 
     <div class="grid-2">
@@ -442,11 +453,11 @@ tr:hover td { background: #fafafa; }
       <div>
         <div class="card">
           <div class="section-head">
-            <h3>Bracket Eliminatorio</h3>
+            <h3>Llave eliminatoria</h3>
             <button class="btn btn-danger btn-sm" onclick="mixtoResetBracket()">🗑 Resetear</button>
           </div>
           <div id="mixtoBracket">
-            <div class="empty"><div class="empty-icon">⚔️</div><p>Generá el bracket primero</p></div>
+            <div class="empty"><div class="empty-icon">⚔️</div><p>Generá la llave primero</p></div>
           </div>
         </div>
         <div id="mixtoChampCard" class="champ-card hidden">
@@ -475,9 +486,23 @@ tr:hover td { background: #fafafa; }
 <div id="toastArea" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:6px;"></div>
 
 <script>
+// ─────────── UTILS ───────────
 const $ = id => document.getElementById(id);
 const sv = (k, v) => localStorage.setItem('t_' + k, JSON.stringify(v));
 const ld = (k, d) => { try { const r = localStorage.getItem('t_' + k); return r ? JSON.parse(r) : d; } catch { return d; } };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const fullName = p => `${(p.nombre || '').trim()} ${(p.apellido || '').trim()}`.trim();
+const isNamed = p => fullName(p).length > 0;
+function pName(players, id) { const p = players.find(x => x.id === id); return p ? fullName(p) : '?'; }
+const groupLetter = i => 'ABCDEFGH'[i] || ('G' + (i + 1));
+function esc(s) { return s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function fillSelect(sel, players, placeholder) {
+  const cur = sel.value;
+  sel.innerHTML = `<option value="">${placeholder}</option>` +
+    players.filter(isNamed).map(p => `<option value="${p.id}">${esc(fullName(p))}</option>`).join('');
+  if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
+}
 
 function toast(msg, type = 'info') {
   const el = document.createElement('div');
@@ -498,82 +523,89 @@ document.querySelectorAll('.tab').forEach(btn => {
   });
 });
 
-let L = ld('liga', { name: '', teams: [], matches: [], qualify: 4, relegate: 3 });
-
-function saveLiga() {
-  L.name = $('ligaName').value;
-  L.qualify = +$('ligaQualify').value || 0;
-  L.relegate = +$('ligaRelegate').value || 0;
-  sv('liga', L);
+// ─────────── LIGA ───────────
+function migrateLiga(d) {
+  if (!d) return { name: '', players: [], matches: [], qualify: 4, relegate: 0 };
+  if (d.players) return d;
+  const players = (d.teams || []).map(t => ({ id: uid(), nombre: t, apellido: '' }));
+  const map = {}; players.forEach(p => map[p.nombre] = p.id);
+  const matches = (d.matches || []).map(m => ({ id: uid(), h: map[m.h], a: map[m.a], hs: m.hs, as: m.as })).filter(m => m.h && m.a);
+  return { name: d.name || '', players, matches, qualify: d.qualify ?? 4, relegate: d.relegate ?? 0 };
 }
+let L = migrateLiga(ld('liga', null));
 
-function ligaAddTeam() {
-  const n = $('ligaTeamInput').value.trim();
-  if (!n) return toast('Ingresá el nombre', 'error');
-  if (L.teams.includes(n)) return toast('Ese equipo ya existe', 'error');
-  L.teams.push(n);
-  $('ligaTeamInput').value = '';
-  saveLiga(); renderLiga();
+function saveLiga() { L.name = $('ligaName').value; L.qualify = +$('ligaQualify').value || 0; L.relegate = +$('ligaRelegate').value || 0; sv('liga', L); }
+function ligaCountText() { const n = L.players.filter(isNamed).length; return n ? `${n} participante${n > 1 ? 's' : ''}` : ''; }
+
+function ligaAddPlayer() {
+  L.players.push({ id: uid(), nombre: '', apellido: '' });
+  sv('liga', L); ligaRenderRoster();
+  const rows = $('ligaRosterBody').querySelectorAll('tr');
+  rows[rows.length - 1]?.querySelector('input')?.focus();
+  ligaRefresh();
 }
-
-function ligaRemoveTeam(name) {
-  if (!confirm(`¿Eliminar "${name}"? Se borrarán sus partidos.`)) return;
-  L.teams = L.teams.filter(t => t !== name);
-  L.matches = L.matches.filter(m => m.h !== name && m.a !== name);
-  saveLiga(); renderLiga();
+function ligaEditPlayer(id, field, val) {
+  const p = L.players.find(x => x.id === id); if (!p) return;
+  p[field] = val; sv('liga', L);
+  $('ligaCount').textContent = ligaCountText();
+  ligaRefresh();
 }
-
+function ligaDelPlayer(id) {
+  L.players = L.players.filter(x => x.id !== id);
+  L.matches = L.matches.filter(m => m.h !== id && m.a !== id);
+  sv('liga', L); ligaRenderRoster(); ligaRefresh();
+}
+function ligaRenderRoster() {
+  const tb = $('ligaRosterBody');
+  if (!L.players.length) { tb.innerHTML = '<tr><td colspan="4" class="roster-empty">Sin participantes todavía. Tocá «+ Agregar participante».</td></tr>'; $('ligaCount').textContent = ''; return; }
+  tb.innerHTML = L.players.map((p, i) => `<tr>
+    <td class="roster-num">${i + 1}</td>
+    <td><input value="${esc(p.nombre)}" placeholder="Nombre" oninput="ligaEditPlayer('${p.id}','nombre',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();ligaAddPlayer();}"></td>
+    <td><input value="${esc(p.apellido)}" placeholder="Apellido" oninput="ligaEditPlayer('${p.id}','apellido',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();ligaAddPlayer();}"></td>
+    <td class="roster-del"><button onclick="ligaDelPlayer('${p.id}')" title="Eliminar">×</button></td>
+  </tr>`).join('');
+  $('ligaCount').textContent = ligaCountText();
+}
+function ligaRefresh() {
+  fillSelect($('ligaHome'), L.players, '-- Local --');
+  fillSelect($('ligaAway'), L.players, '-- Visitante --');
+  renderLigaTable(); renderLigaMatches();
+}
 function ligaAddMatch() {
   const h = $('ligaHome').value, a = $('ligaAway').value;
   const hs = +$('ligaHS').value, as_ = +$('ligaAS').value;
-  if (!h || !a) return toast('Seleccioná ambos equipos', 'error');
-  if (h === a) return toast('Local y visitante deben ser distintos', 'error');
-  L.matches.push({ id: Date.now(), h, a, hs, as: as_ });
+  if (!h || !a) return toast('Elegí ambos participantes', 'error');
+  if (h === a) return toast('Deben ser distintos', 'error');
+  L.matches.push({ id: uid(), h, a, hs, as: as_ });
   $('ligaHS').value = $('ligaAS').value = 0;
-  saveLiga(); renderLiga();
+  sv('liga', L); ligaRefresh();
 }
-
-function ligaDeleteMatch(id) {
-  L.matches = L.matches.filter(m => m.id !== id);
-  saveLiga(); renderLiga();
-}
-
-function ligaClearMatches() {
-  if (confirm('¿Borrar todos los resultados?')) { L.matches = []; saveLiga(); renderLiga(); }
-}
-
+function ligaDeleteMatch(id) { L.matches = L.matches.filter(m => m.id !== id); sv('liga', L); ligaRefresh(); }
+function ligaClearMatches() { if (confirm('¿Borrar todos los resultados?')) { L.matches = []; sv('liga', L); ligaRefresh(); } }
 function ligaReset() {
-  if (!confirm('¿Reiniciar toda la liga?')) return;
-  L = { name: '', teams: [], matches: [], qualify: 4, relegate: 3 };
-  $('ligaName').value = ''; $('ligaQualify').value = 4; $('ligaRelegate').value = 3;
-  saveLiga(); renderLiga();
+  if (!confirm('¿Reiniciar toda la liga? Se borran participantes y partidos.')) return;
+  L = { name: '', players: [], matches: [], qualify: 4, relegate: 0 };
+  $('ligaName').value = ''; $('ligaQualify').value = 4; $('ligaRelegate').value = 0;
+  sv('liga', L); ligaRenderRoster(); ligaRefresh();
 }
-
 function calcLiga() {
   const s = {};
-  L.teams.forEach(t => s[t] = { t, pj:0, pg:0, pe:0, pp:0, gf:0, gc:0, pts:0 });
+  L.players.filter(isNamed).forEach(p => s[p.id] = { id: p.id, t: fullName(p), pj:0, pg:0, pe:0, pp:0, gf:0, gc:0, pts:0 });
   L.matches.forEach(m => {
     if (!s[m.h] || !s[m.a]) return;
     const hh = s[m.h], aa = s[m.a];
-    hh.pj++; aa.pj++;
-    hh.gf += m.hs; hh.gc += m.as;
-    aa.gf += m.as; aa.gc += m.hs;
+    hh.pj++; aa.pj++; hh.gf += m.hs; hh.gc += m.as; aa.gf += m.as; aa.gc += m.hs;
     if (m.hs > m.as) { hh.pg++; hh.pts += 3; aa.pp++; }
     else if (m.hs < m.as) { aa.pg++; aa.pts += 3; hh.pp++; }
     else { hh.pe++; aa.pe++; hh.pts++; aa.pts++; }
   });
   return Object.values(s).sort((a, b) => b.pts-a.pts || (b.gf-b.gc)-(a.gf-a.gc) || b.gf-a.gf || a.t.localeCompare(b.t));
 }
-
 function renderLigaTable() {
   const st = calcLiga();
-  if (!st.length) {
-    $('ligaTable').innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>Agregá equipos</p></div>';
-    $('ligaLegend').style.display = 'none'; return;
-  }
-  const q = +$('ligaQualify').value || 0, r = +$('ligaRelegate').value || 0;
-  const n = st.length;
-  let html = '<div class="table-wrap"><table><thead><tr><th>#</th><th>Equipo</th><th title="Puntos">Pts</th><th title="PJ">PJ</th><th title="Ganados">PG</th><th title="Empatados">PE</th><th title="Perdidos">PP</th><th title="Goles a favor">GF</th><th title="Goles en contra">GC</th><th title="Diferencia">DG</th></tr></thead><tbody>';
+  if (!st.length) { $('ligaTable').innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>Agregá participantes para ver la tabla</p></div>'; $('ligaLegend').style.display = 'none'; return; }
+  const q = +$('ligaQualify').value || 0, r = +$('ligaRelegate').value || 0, n = st.length;
+  let html = '<div class="table-wrap"><table><thead><tr><th>#</th><th>Participante</th><th title="Puntos">Pts</th><th title="Jugados">PJ</th><th title="Ganados">PG</th><th title="Empatados">PE</th><th title="Perdidos">PP</th><th title="A favor">GF</th><th title="En contra">GC</th><th title="Diferencia">DG</th></tr></thead><tbody>';
   st.forEach((s, i) => {
     let cls = '';
     if (q > 0 && i < q) cls = 'qualify-zone';
@@ -585,255 +617,279 @@ function renderLigaTable() {
   $('ligaTable').innerHTML = html;
   $('ligaLegend').style.display = (q > 0 || r > 0) ? 'block' : 'none';
 }
-
-function renderLigaTeams() {
-  const list = $('ligaTeamList');
-  if (!L.teams.length) { list.innerHTML = ''; }
-  else {
-    list.innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:5px;">' +
-      L.teams.map(t => `<span class="chip">${esc(t)}<button class="chip-btn" onclick="ligaRemoveTeam('${esc2(t)}')">×</button></span>`).join('') +
-    '</div>';
-  }
-  const opts = '<option value="">-- Equipo --</option>' + L.teams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
-  $('ligaHome').innerHTML = opts; $('ligaAway').innerHTML = opts;
-}
-
 function renderLigaMatches() {
   const m = L.matches;
   if (!m.length) { $('ligaMatchList').innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Sin partidos aún</p></div>'; return; }
-  $('ligaMatchList').innerHTML = [...m].reverse().slice(0,60).map(x => {
+  $('ligaMatchList').innerHTML = [...m].reverse().slice(0, 80).map(x => {
+    const hn = pName(L.players, x.h), an = pName(L.players, x.a);
     const w = x.hs > x.as ? 'home' : x.hs < x.as ? 'away' : 'draw';
-    return `<div class="match-item">
-      <div class="match-teams">
-        <span class="match-team home" style="${w==='home'?'font-weight:700;':''}">${esc(x.h)}</span>
-        <span class="match-score">${x.hs} - ${x.as}</span>
-        <span class="match-team" style="${w==='away'?'font-weight:700;':''}">${esc(x.a)}</span>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="ligaDeleteMatch(${x.id})">×</button>
-    </div>`;
+    return `<div class="match-item"><div class="match-teams">
+      <span class="match-team home" style="${w==='home'?'font-weight:700;':''}">${esc(hn)}</span>
+      <span class="match-score">${x.hs} - ${x.as}</span>
+      <span class="match-team" style="${w==='away'?'font-weight:700;':''}">${esc(an)}</span>
+    </div><button class="btn btn-ghost btn-sm" onclick="ligaDeleteMatch('${x.id}')">×</button></div>`;
   }).join('');
 }
 
-function renderLiga() { renderLigaTeams(); renderLigaTable(); renderLigaMatches(); }
+// ─────────── GRUPOS ───────────
+function migrateGrupos(d) {
+  if (!d) return { name: '', numGroups: 4, adv: 2, players: [], matches: [] };
+  if (d.players) return d;
+  const players = [], map = {};
+  (d.groups || []).forEach((g, gi) => (g.teams || []).forEach(t => { const id = uid(); players.push({ id, nombre: t, apellido: '', grupo: gi }); map[t] = id; }));
+  const matches = (d.matches || []).map(m => ({ id: uid(), h: map[m.h], a: map[m.a], hs: m.hs, as: m.as, gi: m.gi })).filter(m => m.h && m.a);
+  return { name: d.name || '', numGroups: (d.groups && d.groups.length) || d.numGroups || 4, adv: d.adv || 2, players, matches };
+}
+let G = migrateGrupos(ld('grupos', null));
 
-let G = ld('grupos', { name: '', numGroups: 4, adv: 2, groups: [], matches: [] });
-const GRP_COLORS = ['#2563eb','#7c3aed','#db2777','#dc2626','#d97706','#16a34a','#0891b2','#059669'];
-
+function playerGroup(id) { const p = G.players.find(x => x.id === id); return p ? p.grupo : -1; }
 function saveGrupos() {
   G.name = $('gruposName').value;
-  G.numGroups = +$('gruposNum').value || 4;
-  G.adv = +$('gruposAdv').value || 2;
+  G.numGroups = Math.max(1, Math.min(8, +$('gruposNum').value || 4));
+  G.adv = Math.max(1, +$('gruposAdv').value || 1);
+  G.players.forEach(p => { if (p.grupo >= G.numGroups) p.grupo = G.numGroups - 1; });
+  G.matches = G.matches.filter(m => m.gi < G.numGroups && playerGroup(m.h) === m.gi && playerGroup(m.a) === m.gi);
   sv('grupos', G);
 }
+function gruposCountText() { const n = G.players.filter(isNamed).length; return n ? `${n} participante${n > 1 ? 's' : ''}` : ''; }
 
-function gruposInit() {
-  const n = +$('gruposNum').value || 4;
-  if (G.groups.length && !confirm('¿Reinicializar grupos? Se perderán los datos actuales.')) return;
-  const letters = 'ABCDEFGH';
-  G.groups = Array.from({length: n}, (_, i) => ({ letter: letters[i] || `G${i+1}`, teams: [] }));
-  G.matches = [];
-  saveGrupos(); renderGrupos();
-  toast(`${n} grupos creados`, 'success');
+function gruposAddPlayer() {
+  G.players.push({ id: uid(), nombre: '', apellido: '', grupo: 0 });
+  sv('grupos', G); gruposRenderRoster();
+  const rows = $('gruposRosterBody').querySelectorAll('tr');
+  rows[rows.length - 1]?.querySelector('input')?.focus();
+  gruposRefresh();
 }
-
-function gruposAddTeam() {
-  const name = $('gruposTeamInput').value.trim();
-  const gi = +$('gruposTeamGrp').value;
-  if (!name) return toast('Ingresá nombre', 'error');
-  if (!G.groups.length) return toast('Creá los grupos primero', 'error');
-  if (G.groups.some(g => g.teams.includes(name))) return toast('Ese equipo ya existe', 'error');
-  G.groups[gi].teams.push(name);
-  $('gruposTeamInput').value = '';
-  saveGrupos(); renderGrupos();
+function gruposEditPlayer(id, field, val) {
+  const p = G.players.find(x => x.id === id); if (!p) return;
+  if (field === 'grupo') { p.grupo = +val; G.matches = G.matches.filter(m => m.h !== id && m.a !== id); }
+  else p[field] = val;
+  sv('grupos', G);
+  $('gruposCount').textContent = gruposCountText();
+  gruposRefresh();
 }
-
-function gruposRemoveTeam(gi, name) {
-  G.groups[gi].teams = G.groups[gi].teams.filter(t => t !== name);
-  G.matches = G.matches.filter(m => m.h !== name && m.a !== name);
-  saveGrupos(); renderGrupos();
+function gruposDelPlayer(id) {
+  G.players = G.players.filter(x => x.id !== id);
+  G.matches = G.matches.filter(m => m.h !== id && m.a !== id);
+  sv('grupos', G); gruposRenderRoster(); gruposRefresh();
 }
-
+function gruposRenderRoster() {
+  const tb = $('gruposRosterBody');
+  if (!G.players.length) { tb.innerHTML = '<tr><td colspan="5" class="roster-empty">Sin participantes todavía. Tocá «+ Agregar participante».</td></tr>'; $('gruposCount').textContent = ''; return; }
+  tb.innerHTML = G.players.map((p, i) => {
+    let opts = '';
+    for (let g = 0; g < G.numGroups; g++) opts += `<option value="${g}" ${p.grupo === g ? 'selected' : ''}>Grupo ${groupLetter(g)}</option>`;
+    return `<tr>
+      <td class="roster-num">${i + 1}</td>
+      <td><input value="${esc(p.nombre)}" placeholder="Nombre" oninput="gruposEditPlayer('${p.id}','nombre',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();gruposAddPlayer();}"></td>
+      <td><input value="${esc(p.apellido)}" placeholder="Apellido" oninput="gruposEditPlayer('${p.id}','apellido',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();gruposAddPlayer();}"></td>
+      <td><select onchange="gruposEditPlayer('${p.id}','grupo',this.value)">${opts}</select></td>
+      <td class="roster-del"><button onclick="gruposDelPlayer('${p.id}')" title="Eliminar">×</button></td>
+    </tr>`;
+  }).join('');
+  $('gruposCount').textContent = gruposCountText();
+}
+function gruposMatchGrpOptions() { let o = ''; for (let i = 0; i < G.numGroups; i++) o += `<option value="${i}">Grupo ${groupLetter(i)}</option>`; return o; }
+function gruposFillMatchSelects() {
+  const gi = +$('gruposMatchGrp').value || 0;
+  const ps = G.players.filter(p => p.grupo === gi);
+  fillSelect($('gruposHome'), ps, '-- Local --');
+  fillSelect($('gruposAway'), ps, '-- Visitante --');
+}
+function gruposRefresh() {
+  const cur = $('gruposMatchGrp').value;
+  $('gruposMatchGrp').innerHTML = gruposMatchGrpOptions();
+  if ([...$('gruposMatchGrp').options].some(o => o.value === cur)) $('gruposMatchGrp').value = cur;
+  gruposFillMatchSelects();
+  renderGruposGrid(); renderGruposMatches(); renderGruposClassified();
+}
 function gruposAddMatch() {
+  const gi = +$('gruposMatchGrp').value || 0;
   const h = $('gruposHome').value, a = $('gruposAway').value;
   const hs = +$('gruposHS').value, as_ = +$('gruposAS').value;
-  if (!h || !a) return toast('Seleccioná ambos equipos', 'error');
-  if (h === a) return toast('Equipos distintos', 'error');
-  const hg = G.groups.findIndex(g => g.teams.includes(h));
-  const ag = G.groups.findIndex(g => g.teams.includes(a));
-  if (hg !== ag || hg < 0) return toast('Los equipos deben ser del mismo grupo', 'error');
-  G.matches.push({ id: Date.now(), h, a, hs, as: as_, gi: hg });
+  if (!h || !a) return toast('Elegí ambos participantes', 'error');
+  if (h === a) return toast('Deben ser distintos', 'error');
+  G.matches.push({ id: uid(), h, a, hs, as: as_, gi });
   $('gruposHS').value = $('gruposAS').value = 0;
-  saveGrupos(); renderGrupos();
+  sv('grupos', G); gruposRefresh();
 }
-
-function gruposDeleteMatch(id) {
-  G.matches = G.matches.filter(m => m.id !== id);
-  saveGrupos(); renderGrupos();
-}
-
-function gruposClearMatches() {
-  if (confirm('¿Borrar todos los partidos?')) { G.matches = []; saveGrupos(); renderGrupos(); }
-}
-
+function gruposDeleteMatch(id) { G.matches = G.matches.filter(m => m.id !== id); sv('grupos', G); gruposRefresh(); }
+function gruposClearMatches() { if (confirm('¿Borrar todos los partidos?')) { G.matches = []; sv('grupos', G); gruposRefresh(); } }
 function gruposReset() {
-  if (!confirm('¿Reiniciar fase de grupos?')) return;
-  G = { name: '', numGroups: 4, adv: 2, groups: [], matches: [] };
+  if (!confirm('¿Reiniciar fase de grupos? Se borran participantes y partidos.')) return;
+  G = { name: '', numGroups: 4, adv: 2, players: [], matches: [] };
   $('gruposName').value = ''; $('gruposNum').value = 4; $('gruposAdv').value = 2;
-  saveGrupos(); renderGrupos();
+  sv('grupos', G); gruposRenderRoster(); gruposRefresh();
 }
-
 function calcGroupStandings(gi) {
-  const grp = G.groups[gi];
   const s = {};
-  grp.teams.forEach(t => s[t] = { t, pj:0, pg:0, pe:0, pp:0, gf:0, gc:0, pts:0 });
+  G.players.filter(p => p.grupo === gi && isNamed(p)).forEach(p => s[p.id] = { id: p.id, t: fullName(p), pj:0, pg:0, pe:0, pp:0, gf:0, gc:0, pts:0 });
   G.matches.filter(m => m.gi === gi).forEach(m => {
     if (!s[m.h] || !s[m.a]) return;
     const hh = s[m.h], aa = s[m.a];
-    hh.pj++; aa.pj++;
-    hh.gf += m.hs; hh.gc += m.as;
-    aa.gf += m.as; aa.gc += m.hs;
-    if (m.hs > m.as) { hh.pg++; hh.pts+=3; aa.pp++; }
-    else if (m.hs < m.as) { aa.pg++; aa.pts+=3; hh.pp++; }
+    hh.pj++; aa.pj++; hh.gf += m.hs; hh.gc += m.as; aa.gf += m.as; aa.gc += m.hs;
+    if (m.hs > m.as) { hh.pg++; hh.pts += 3; aa.pp++; }
+    else if (m.hs < m.as) { aa.pg++; aa.pts += 3; hh.pp++; }
     else { hh.pe++; aa.pe++; hh.pts++; aa.pts++; }
   });
-  return Object.values(s).sort((a, b) => b.pts-a.pts || (b.gf-b.gc)-(a.gf-a.gc) || b.gf-a.gf);
+  return Object.values(s).sort((a, b) => b.pts-a.pts || (b.gf-b.gc)-(a.gf-a.gc) || b.gf-a.gf || a.t.localeCompare(b.t));
 }
-
 function getGruposClassified() {
-  return G.groups.flatMap((_, i) => calcGroupStandings(i).slice(0, G.adv));
+  const out = [];
+  for (let i = 0; i < G.numGroups; i++) calcGroupStandings(i).slice(0, G.adv).forEach(s => out.push(s));
+  return out;
 }
-
-function renderGrupos() {
-  if (G.groups.length) {
-    $('gruposTeamGrp').innerHTML = G.groups.map((g, i) => `<option value="${i}">Grupo ${g.letter}</option>`).join('');
-    const allTeams = G.groups.flatMap(g => g.teams);
-    const opts = '<option value="">--</option>' + allTeams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
-    $('gruposHome').innerHTML = opts; $('gruposAway').innerHTML = opts;
-  } else {
-    $('gruposTeamGrp').innerHTML = '';
-    $('gruposHome').innerHTML = $('gruposAway').innerHTML = '<option value="">--</option>';
-  }
-  renderGruposGrid();
-  renderGruposMatches();
-  renderGruposClassified();
-}
-
+const GRP_COLORS = ['#2563eb','#7c3aed','#db2777','#dc2626','#d97706','#16a34a','#0891b2','#059669'];
 function renderGruposGrid() {
-  if (!G.groups.length) {
-    $('gruposGrid').innerHTML = '<div class="empty"><div class="empty-icon">👥</div><p>Configurá los grupos primero</p></div>'; return;
-  }
-  $('gruposGrid').innerHTML = G.groups.map((g, gi) => {
+  const hasPlayers = G.players.filter(isNamed).length > 0;
+  if (!hasPlayers) { $('gruposGrid').innerHTML = '<div class="empty"><div class="empty-icon">👥</div><p>Agregá participantes para ver los grupos</p></div>'; return; }
+  let html = '';
+  for (let gi = 0; gi < G.numGroups; gi++) {
     const st = calcGroupStandings(gi);
     const color = GRP_COLORS[gi % GRP_COLORS.length];
     const rows = st.length ? st.map((s, i) => {
       const dg = s.gf - s.gc;
-      return `<tr class="${i < G.adv ? 'advance' : ''}">
-        <td style="color:var(--text-muted);font-size:11px;">${i+1}</td>
-        <td>${esc(s.t)} <button onclick="gruposRemoveTeam(${gi},'${esc2(s.t)}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:11px;padding:0;">×</button></td>
-        <td class="pts">${s.pts}</td><td>${s.pj}</td><td>${s.gf}</td><td>${s.gc}</td>
-        <td>${dg>0?'+':''}${dg}</td>
-      </tr>`;
-    }).join('') : `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:12px;font-size:12px;">Sin equipos</td></tr>`;
-    return `<div class="group-card">
-      <div class="group-header" style="background:${color};">
-        <span>Grupo ${g.letter}</span>
-        <span style="font-size:11px;opacity:.75;">${g.teams.length} equipos</span>
-      </div>
-      <table class="group-table"><thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>PJ</th><th>GF</th><th>GC</th><th>DG</th></tr></thead><tbody>${rows}</tbody></table>
-    </div>`;
-  }).join('');
+      return `<tr class="${i < G.adv ? 'advance' : ''}"><td style="color:var(--text-muted);font-size:11px;">${i+1}</td><td>${esc(s.t)}</td><td class="pts">${s.pts}</td><td>${s.pj}</td><td>${s.gf}</td><td>${s.gc}</td><td>${dg>0?'+':''}${dg}</td></tr>`;
+    }).join('') : `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:12px;font-size:12px;">Sin participantes</td></tr>`;
+    const count = G.players.filter(p => p.grupo === gi && isNamed(p)).length;
+    html += `<div class="group-card"><div class="group-header" style="background:${color};"><span>Grupo ${groupLetter(gi)}</span><span style="font-size:11px;opacity:.75;">${count} jug.</span></div><table class="group-table"><thead><tr><th>#</th><th>Participante</th><th>Pts</th><th>PJ</th><th>GF</th><th>GC</th><th>DG</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  $('gruposGrid').innerHTML = html;
 }
-
 function renderGruposMatches() {
   const m = G.matches;
   if (!m.length) { $('gruposMatchList').innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Sin partidos</p></div>'; return; }
-  $('gruposMatchList').innerHTML = [...m].reverse().slice(0,60).map(x => {
-    const g = G.groups[x.gi];
+  $('gruposMatchList').innerHTML = [...m].reverse().slice(0, 80).map(x => {
+    const hn = pName(G.players, x.h), an = pName(G.players, x.a);
     const w = x.hs > x.as ? 'home' : x.hs < x.as ? 'away' : 'draw';
-    const color = g ? GRP_COLORS[x.gi % GRP_COLORS.length] : '#999';
-    return `<div class="match-item">
-      <span style="width:20px;height:20px;border-radius:4px;background:${color};flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">${g ? g.letter : '?'}</span>
-      <div class="match-teams">
-        <span class="match-team home" style="${w==='home'?'font-weight:700;':''}">${esc(x.h)}</span>
-        <span class="match-score">${x.hs} - ${x.as}</span>
-        <span class="match-team" style="${w==='away'?'font-weight:700;':''}">${esc(x.a)}</span>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="gruposDeleteMatch(${x.id})">×</button>
-    </div>`;
+    const color = GRP_COLORS[x.gi % GRP_COLORS.length];
+    return `<div class="match-item"><span style="width:20px;height:20px;border-radius:4px;background:${color};flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">${groupLetter(x.gi)}</span><div class="match-teams">
+      <span class="match-team home" style="${w==='home'?'font-weight:700;':''}">${esc(hn)}</span>
+      <span class="match-score">${x.hs} - ${x.as}</span>
+      <span class="match-team" style="${w==='away'?'font-weight:700;':''}">${esc(an)}</span>
+    </div><button class="btn btn-ghost btn-sm" onclick="gruposDeleteMatch('${x.id}')">×</button></div>`;
   }).join('');
 }
-
 function renderGruposClassified() {
   const cl = getGruposClassified();
   if (!cl.length) { $('gruposClassified').innerHTML = '<div class="empty" style="padding:16px;"><p>Completá los partidos para ver clasificados</p></div>'; return; }
-  const adv = G.adv;
   let html = '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
-  G.groups.forEach((g, gi) => {
-    const st = calcGroupStandings(gi);
+  for (let gi = 0; gi < G.numGroups; gi++) {
     const color = GRP_COLORS[gi % GRP_COLORS.length];
-    st.slice(0, adv).forEach((s, pos) => {
-      html += `<span style="display:inline-flex;align-items:center;gap:5px;background:${color}18;border:1px solid ${color}44;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:500;">
-        <span style="width:7px;height:7px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0;"></span>
-        ${esc(s.t)} <span style="font-size:10px;color:var(--text-muted);">${g.letter}${pos+1}</span>
-      </span>`;
+    calcGroupStandings(gi).slice(0, G.adv).forEach((s, pos) => {
+      html += `<span style="display:inline-flex;align-items:center;gap:5px;background:${color}18;border:1px solid ${color}44;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:500;"><span style="width:7px;height:7px;border-radius:50%;background:${color};flex-shrink:0;"></span>${esc(s.t)} <span style="font-size:10px;color:var(--text-muted);">${groupLetter(gi)}${pos+1}</span></span>`;
     });
-  });
+  }
   html += '</div>';
   $('gruposClassified').innerHTML = html;
 }
 
-let E = ld('elim', { name: '', size: 16, teams: [], rounds: [] });
+// ─────────── ELIMINACIÓN ───────────
+function migrateElim(d) {
+  if (!d) return { name: '', players: [], rounds: [] };
+  if (d.players) return d;
+  const players = (d.teams || []).map(t => ({ id: uid(), nombre: t, apellido: '' }));
+  return { name: d.name || '', players, rounds: d.rounds || [] };
+}
+let E = migrateElim(ld('elim', null));
 let modalCtx = null;
 
-function saveElim() {
-  E.name = $('elimName').value;
-  E.size = +$('elimSize').value || 16;
-  sv('elim', E);
+function saveElim() { E.name = $('elimName').value; sv('elim', E); }
+function nextPow2(n) { let s = 2; while (s < n) s *= 2; return s; }
+function elimCountText() { const n = E.players.filter(isNamed).length; return n ? `${n} participante${n > 1 ? 's' : ''}` : ''; }
+function elimSizeHint() {
+  const n = E.players.filter(isNamed).length;
+  if (n < 2) { $('elimSizeHint').textContent = 'Agregá al menos 2 participantes para crear la llave.'; return; }
+  const size = nextPow2(n);
+  $('elimSizeHint').textContent = `${n} participantes → llave de ${size}${size > n ? ` (${size - n} lugares libres quedan como "BYE", pasan directo)` : ''}.`;
 }
-
-function elimAddTeam() {
-  const n = $('elimTeamInput').value.trim();
-  if (!n) return toast('Ingresá nombre', 'error');
-  if (E.teams.includes(n)) return toast('Ya existe', 'error');
-  const size = +$('elimSize').value || 16;
-  if (E.teams.length >= size) return toast(`Ya hay ${size} equipos (máximo para este bracket)`, 'error');
-  E.teams.push(n);
-  $('elimTeamInput').value = '';
-  saveElim(); renderElimTeams();
+function elimAddPlayer() {
+  E.players.push({ id: uid(), nombre: '', apellido: '' });
+  sv('elim', E); elimRenderRoster();
+  const rows = $('elimRosterBody').querySelectorAll('tr');
+  rows[rows.length - 1]?.querySelector('input')?.focus();
+  elimSizeHint();
 }
-
-function elimRemoveTeam(name) {
-  E.teams = E.teams.filter(t => t !== name);
-  saveElim(); renderElimTeams();
+function elimEditPlayer(id, field, val) {
+  const p = E.players.find(x => x.id === id); if (!p) return;
+  p[field] = val; sv('elim', E);
+  $('elimCount').textContent = elimCountText(); elimSizeHint();
 }
-
-function elimShuffleDraw() {
-  for (let i = E.teams.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [E.teams[i], E.teams[j]] = [E.teams[j], E.teams[i]];
-  }
-  saveElim(); renderElimTeams();
-  toast('¡Sorteo realizado!', 'success');
+function elimDelPlayer(id) { E.players = E.players.filter(x => x.id !== id); sv('elim', E); elimRenderRoster(); elimSizeHint(); }
+function elimShuffle() {
+  for (let i = E.players.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[E.players[i], E.players[j]] = [E.players[j], E.players[i]]; }
+  sv('elim', E); elimRenderRoster();
+  toast('¡Orden mezclado!', 'success');
 }
-
-function elimClearTeams() {
-  if (confirm('¿Limpiar lista?')) { E.teams = []; saveElim(); renderElimTeams(); }
+function elimRenderRoster() {
+  const tb = $('elimRosterBody');
+  if (!E.players.length) { tb.innerHTML = '<tr><td colspan="4" class="roster-empty">Sin participantes todavía. Tocá «+ Agregar participante».</td></tr>'; $('elimCount').textContent = ''; return; }
+  tb.innerHTML = E.players.map((p, i) => `<tr>
+    <td class="roster-num">${i + 1}</td>
+    <td><input value="${esc(p.nombre)}" placeholder="Nombre" oninput="elimEditPlayer('${p.id}','nombre',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();elimAddPlayer();}"></td>
+    <td><input value="${esc(p.apellido)}" placeholder="Apellido" oninput="elimEditPlayer('${p.id}','apellido',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();elimAddPlayer();}"></td>
+    <td class="roster-del"><button onclick="elimDelPlayer('${p.id}')" title="Eliminar">×</button></td>
+  </tr>`).join('');
+  $('elimCount').textContent = elimCountText();
 }
-
-function elimReset() {
-  if (!confirm('¿Reiniciar bracket?')) return;
-  E.rounds = [];
-  saveElim(); renderElim();
-}
-
 function elimInit() {
-  const size = +$('elimSize').value || 16;
-  if (!confirm(`¿Crear bracket para ${size} equipos?${E.teams.length < size ? ` (${size - E.teams.length} espacios libres serán "BYE")` : ''}`)) return;
-  E.rounds = buildBracket(E.teams, size);
-  saveElim(); renderElim();
-  toast('Bracket creado', 'success');
+  const named = E.players.filter(isNamed);
+  if (named.length < 2) return toast('Agregá al menos 2 participantes', 'error');
+  const size = nextPow2(named.length);
+  if (!confirm(`¿Crear llave de ${size} con tus ${named.length} participantes?`)) return;
+  E.rounds = buildBracket(named.map(fullName), size);
+  sv('elim', E); renderElim();
+  toast('Llave creada', 'success');
+}
+function elimReset() {
+  if (!confirm('¿Borrar la llave? (Los participantes se conservan.)')) return;
+  E.rounds = []; sv('elim', E); renderElim();
+}
+function renderElim() {
+  elimRenderRoster(); elimSizeHint();
+  if (!E.rounds.length) {
+    $('elimBracket').innerHTML = '<div class="empty"><div class="empty-icon">⚔️</div><p>Cargá participantes y tocá «Crear llave»</p></div>';
+    $('elimChampCard').classList.add('hidden'); return;
+  }
+  $('elimBracket').innerHTML = bracketHTML(E.rounds, 'elim');
+  const last = E.rounds[E.rounds.length - 1];
+  if (last && last[0] && last[0].w) { $('elimChampCard').classList.remove('hidden'); $('elimChampName').textContent = last[0].w; }
+  else $('elimChampCard').classList.add('hidden');
 }
 
+// ─────────── MIXTO ───────────
+let MX = ld('mixto', { rounds: [] });
+function mixtoGenerateBracket() {
+  const cl = getGruposClassified();
+  if (!cl.length) return toast('No hay clasificados. Completá la fase de grupos primero.', 'error');
+  MX.rounds = buildBracket(cl.map(s => s.t), nextPow2(cl.length));
+  sv('mixto', MX); renderMixto();
+  toast(`Llave generada con ${cl.length} clasificados`, 'success');
+}
+function mixtoResetBracket() { if (!confirm('¿Resetear llave mixta?')) return; MX.rounds = []; sv('mixto', MX); renderMixto(); }
+function renderMixto() {
+  const cl = getGruposClassified();
+  if (cl.length) {
+    $('mixtoPhase1Badge').className = 'badge badge-green';
+    $('mixtoClassified').innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:5px;">' + cl.map((s, i) => `<span class="chip" style="background:#f0fdf4;border:1px solid #bbf7d0;">${i+1}. ${esc(s.t)}</span>`).join('') + '</div>';
+  } else {
+    $('mixtoPhase1Badge').className = 'badge';
+    $('mixtoClassified').innerHTML = '<div class="empty" style="padding:16px;"><p>Completá la fase de grupos en la pestaña <strong>Grupos</strong></p></div>';
+  }
+  if (MX.rounds && MX.rounds.length) {
+    $('mixtoPhase2Badge').className = 'badge badge-blue';
+    $('mixtoBracket').innerHTML = bracketHTML(MX.rounds, 'mixto');
+    const last = MX.rounds[MX.rounds.length - 1];
+    if (last && last[0] && last[0].w) { $('mixtoChampCard').classList.remove('hidden'); $('mixtoChampName').textContent = last[0].w; }
+    else $('mixtoChampCard').classList.add('hidden');
+  } else {
+    $('mixtoPhase2Badge').className = 'badge';
+    $('mixtoBracket').innerHTML = '<div class="empty"><div class="empty-icon">⚔️</div><p>Generá la llave primero</p></div>';
+    $('mixtoChampCard').classList.add('hidden');
+  }
+}
+
+// ─────────── BRACKET ENGINE ───────────
 function buildBracket(teamList, size) {
   const seeded = [...teamList].slice(0, size);
   while (seeded.length < size) seeded.push(null);
@@ -841,20 +897,15 @@ function buildBracket(teamList, size) {
   for (let i = 0; i < size; i += 2) {
     const h = seeded[i], a = seeded[i + 1];
     let w = null;
-    if (!h) w = a;
-    if (!a) w = h;
+    if (!h) w = a; if (!a) w = h;
     r1.push({ h, a, hs: null, as: null, w });
   }
   const rounds = [r1];
   let mc = size / 4;
-  while (mc >= 1) {
-    rounds.push(Array.from({length: mc}, () => ({ h: null, a: null, hs: null, as: null, w: null })));
-    mc /= 2;
-  }
+  while (mc >= 1) { rounds.push(Array.from({ length: mc }, () => ({ h: null, a: null, hs: null, as: null, w: null }))); mc /= 2; }
   propagate(rounds);
   return rounds;
 }
-
 function propagate(rounds) {
   for (let r = 0; r < rounds.length - 1; r++) {
     for (let m = 0; m < rounds[r].length; m++) {
@@ -869,78 +920,6 @@ function propagate(rounds) {
     }
   }
 }
-
-function renderElimTeams() {
-  const size = +($('elimSize').value) || 16;
-  if (!E.teams.length) { $('elimTeamList').innerHTML = ''; return; }
-  $('elimTeamList').innerHTML =
-    `<div style="margin-bottom:8px;font-size:11px;color:var(--text-muted);">${E.teams.length} / ${size} equipos</div>` +
-    '<div style="display:flex;flex-wrap:wrap;gap:5px;">' +
-    E.teams.map((t, i) => `<span class="chip"><span style="color:var(--text-muted);font-size:10px;">${i+1}.</span> ${esc(t)}<button class="chip-btn" onclick="elimRemoveTeam('${esc2(t)}')">×</button></span>`).join('') +
-    '</div>';
-}
-
-function renderElim() {
-  renderElimTeams();
-  if (!E.rounds.length) {
-    $('elimBracket').innerHTML = '<div class="empty"><div class="empty-icon">⚔️</div><p>Crea el bracket para comenzar</p></div>';
-    $('elimChampCard').classList.add('hidden'); return;
-  }
-  $('elimBracket').innerHTML = bracketHTML(E.rounds, 'elim');
-  const last = E.rounds[E.rounds.length - 1];
-  if (last && last[0] && last[0].w) {
-    $('elimChampCard').classList.remove('hidden');
-    $('elimChampName').textContent = last[0].w;
-  } else {
-    $('elimChampCard').classList.add('hidden');
-  }
-}
-
-let MX = ld('mixto', { rounds: [] });
-
-function mixtoGenerateBracket() {
-  const cl = getGruposClassified();
-  if (!cl.length) return toast('No hay clasificados. Completá la fase de grupos primero.', 'error');
-  let size = 2;
-  while (size < cl.length) size *= 2;
-  MX.rounds = buildBracket(cl.map(s => s.t), size);
-  sv('mixto', MX); renderMixto();
-  toast(`Bracket generado con ${cl.length} clasificados`, 'success');
-}
-
-function mixtoResetBracket() {
-  if (!confirm('¿Resetear bracket mixto?')) return;
-  MX.rounds = []; sv('mixto', MX); renderMixto();
-}
-
-function renderMixto() {
-  const cl = getGruposClassified();
-  if (cl.length) {
-    $('mixtoPhase1Badge').className = 'badge badge-green';
-    $('mixtoClassified').innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:5px;">' +
-      cl.map((s, i) => `<span class="chip" style="background:#f0fdf4;border:1px solid #bbf7d0;">${i+1}. ${esc(s.t)}</span>`).join('') + '</div>';
-  } else {
-    $('mixtoPhase1Badge').className = 'badge';
-    $('mixtoClassified').innerHTML = '<div class="empty" style="padding:16px;"><p>Completá la fase de grupos en la pestaña <strong>Grupos</strong></p></div>';
-  }
-
-  if (MX.rounds && MX.rounds.length) {
-    $('mixtoPhase2Badge').className = 'badge badge-blue';
-    $('mixtoBracket').innerHTML = bracketHTML(MX.rounds, 'mixto');
-    const last = MX.rounds[MX.rounds.length - 1];
-    if (last && last[0] && last[0].w) {
-      $('mixtoChampCard').classList.remove('hidden');
-      $('mixtoChampName').textContent = last[0].w;
-    } else {
-      $('mixtoChampCard').classList.add('hidden');
-    }
-  } else {
-    $('mixtoPhase2Badge').className = 'badge';
-    $('mixtoBracket').innerHTML = '<div class="empty"><div class="empty-icon">⚔️</div><p>Generá el bracket primero</p></div>';
-    $('mixtoChampCard').classList.add('hidden');
-  }
-}
-
 function roundName(total, idx) {
   const rem = total - idx;
   if (rem === 1) return 'Final';
@@ -950,7 +929,6 @@ function roundName(total, idx) {
   if (rem === 5) return 'Ronda 32';
   return `Ronda ${idx + 1}`;
 }
-
 function bracketHTML(rounds, source) {
   let html = '<div class="bracket-wrap"><div class="bracket">';
   rounds.forEach((round, ri) => {
@@ -970,79 +948,54 @@ function bracketHTML(rounds, source) {
   return html;
 }
 
+// ─────────── SCORE MODAL ───────────
 function openModal(source, ri, mi) {
   const rounds = source === 'mixto' ? MX.rounds : E.rounds;
   if (!rounds || !rounds[ri]) return;
   const m = rounds[ri][mi];
-  if (!m.h && !m.a) return toast('Partido sin equipos asignados todavía', 'error');
+  if (!m.h && !m.a) return toast('Partido sin participantes asignados todavía', 'error');
   modalCtx = { source, ri, mi };
   $('scoreModalTitle').textContent = roundName(rounds.length, ri);
   $('scoreModalBody').innerHTML = `
-    <div class="score-row">
-      <span class="score-team">${esc(m.h || 'BYE')}</span>
-      <input type="number" class="score-num" id="mHS" min="0" value="${m.hs !== null ? m.hs : 0}" ${!m.h ? 'disabled' : ''}>
-    </div>
-    <div class="score-row">
-      <span class="score-team">${esc(m.a || 'BYE')}</span>
-      <input type="number" class="score-num" id="mAS" min="0" value="${m.as !== null ? m.as : 0}" ${!m.a ? 'disabled' : ''}>
-    </div>
-    <p style="margin-top:10px;font-size:11px;color:var(--text-muted);">En caso de empate, el equipo de arriba avanza.</p>`;
+    <div class="score-row"><span class="score-team">${esc(m.h || 'BYE')}</span><input type="number" class="score-num" id="mHS" min="0" value="${m.hs !== null ? m.hs : 0}" ${!m.h ? 'disabled' : ''}></div>
+    <div class="score-row"><span class="score-team">${esc(m.a || 'BYE')}</span><input type="number" class="score-num" id="mAS" min="0" value="${m.as !== null ? m.as : 0}" ${!m.a ? 'disabled' : ''}></div>
+    <p style="margin-top:10px;font-size:11px;color:var(--text-muted);">En caso de empate, el de arriba avanza.</p>`;
   $('scoreModal').classList.remove('hidden');
   setTimeout(() => $('mHS').focus(), 50);
 }
-
-function closeModal() {
-  $('scoreModal').classList.add('hidden');
-  modalCtx = null;
-}
-
+function closeModal() { $('scoreModal').classList.add('hidden'); modalCtx = null; }
 function confirmScore() {
   if (!modalCtx) return;
   const { source, ri, mi } = modalCtx;
   const rounds = source === 'mixto' ? MX.rounds : E.rounds;
   const m = rounds[ri][mi];
-  const hs = +$('mHS').value;
-  const as_ = +$('mAS').value;
+  const hs = +$('mHS').value, as_ = +$('mAS').value;
   if (isNaN(hs) || isNaN(as_) || hs < 0 || as_ < 0) return toast('Puntajes inválidos', 'error');
-  m.hs = hs; m.as = as_;
-  m.w = hs >= as_ ? m.h : m.a;
+  m.hs = hs; m.as = as_; m.w = hs >= as_ ? m.h : m.a;
   propagate(rounds);
   closeModal();
-  if (source === 'mixto') { sv('mixto', MX); renderMixto(); }
-  else { saveElim(); renderElim(); }
+  if (source === 'mixto') { sv('mixto', MX); renderMixto(); } else { sv('elim', E); renderElim(); }
 }
-
 $('scoreModal').addEventListener('click', e => { if (e.target === $('scoreModal')) closeModal(); });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
   if (e.key === 'Enter' && !$('scoreModal').classList.contains('hidden')) { e.preventDefault(); confirmScore(); }
 });
 
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function esc2(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
-
-function onEnter(id, fn) { $(id).addEventListener('keydown', e => e.key === 'Enter' && fn()); }
-onEnter('ligaTeamInput', ligaAddTeam);
-onEnter('gruposTeamInput', gruposAddTeam);
-onEnter('elimTeamInput', elimAddTeam);
-
+// ─────────── INIT ───────────
 (function init() {
   if (L.name) $('ligaName').value = L.name;
   $('ligaQualify').value = L.qualify ?? 4;
-  $('ligaRelegate').value = L.relegate ?? 3;
-  renderLiga();
+  $('ligaRelegate').value = L.relegate ?? 0;
+  ligaRenderRoster(); ligaRefresh();
 
   if (G.name) $('gruposName').value = G.name;
   $('gruposNum').value = G.numGroups || 4;
   $('gruposAdv').value = G.adv || 2;
-  renderGrupos();
+  gruposRenderRoster(); gruposRefresh();
 
   if (E.name) $('elimName').value = E.name;
-  if (E.size) $('elimSize').value = E.size;
-  renderElim();
+  elimRenderRoster(); renderElim();
 })();
 </script>
 </body>
