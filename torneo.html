@@ -11,41 +11,33 @@
   --success: #16a34a;
   --danger: #dc2626;
   --warning: #d97706;
-  --bg: #f8fafc;
+  --bg: #f4ede0;
   --card: #ffffff;
-  --border: #e2e8f0;
+  --border: #ddd3c3;
   --text: #1e293b;
   --text-muted: #64748b;
   --radius: 10px;
-  --shadow: 0 1px 3px rgba(0,0,0,.1);
+  --shadow: 0 1px 3px rgba(0,0,0,.08);
   --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
 .container { max-width: 1400px; margin: 0 auto; padding: 16px; }
 
-/* Header */
-.header { background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
-.header h1 { font-size: 1.3rem; font-weight: 700; white-space: nowrap; }
+.header { background: var(--primary); padding: 12px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(37,99,235,.35); }
+.header h1 { font-size: 1.3rem; font-weight: 700; white-space: nowrap; color: #fff; }
+.tabs { display: flex; gap: 4px; background: rgba(255,255,255,.18); border-radius: 8px; padding: 4px; }
+.tab { padding: 6px 16px; border: none; background: transparent; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; color: rgba(255,255,255,.8); transition: all .15s; }
+.tab:hover { color: #fff; background: rgba(255,255,255,.12); }
+.tab.active { background: #fff; color: var(--primary); font-weight: 600; }
 
-/* Tabs */
-.tabs { display: flex; gap: 4px; background: #f1f5f9; border-radius: 8px; padding: 4px; }
-.tab { padding: 6px 16px; border: none; background: transparent; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all .15s; }
-.tab:hover { color: var(--text); }
-.tab.active { background: var(--card); color: var(--primary); font-weight: 600; box-shadow: var(--shadow); }
-
-/* Tab content */
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-/* Cards */
 .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
 .card-title { font-size: .95rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-
-/* Grid */
 .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
 
-/* Form */
 .form-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
 .form-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 110px; }
 label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; }
@@ -53,22 +45,21 @@ input, select { padding: 8px 10px; border: 1px solid var(--border); border-radiu
 input:focus, select:focus { border-color: var(--primary); }
 input[type="number"] { max-width: 75px; }
 
-/* Buttons */
 .btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 14px; border-radius: 7px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: all .15s; white-space: nowrap; }
 .btn-primary { background: var(--primary); color: #fff; }
 .btn-primary:hover { background: var(--primary-hover); }
 .btn-success { background: var(--success); color: #fff; }
-.btn-success:hover { background: #15803d; }
 .btn-danger { background: var(--danger); color: #fff; }
 .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
-.btn-ghost:hover { background: #f1f5f9; color: var(--text); }
+.btn-ghost:hover { background: #ede6da; color: var(--text); }
 .btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-ok { background: var(--primary); color: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.btn-ok:hover { background: var(--primary-hover); }
 
-/* Table */
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { background: #f8fafc; padding: 7px 10px; text-align: left; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); white-space: nowrap; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; }
-td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; }
+th { background: #ede6da; padding: 7px 10px; text-align: left; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); white-space: nowrap; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; }
+td { padding: 8px 10px; border-bottom: 1px solid #ede6da; }
 tr:last-child td { border-bottom: none; }
 .rank { font-weight: 700; color: var(--text-muted); }
 .team-name { font-weight: 500; }
@@ -76,10 +67,9 @@ tr:last-child td { border-bottom: none; }
 .qualify-zone td:first-child { border-left: 3px solid var(--success); }
 .relegation-zone td:first-child { border-left: 3px solid var(--danger); }
 
-/* Roster (Excel-like) table */
 .roster-table { width: 100%; border-collapse: collapse; }
-.roster-table th { background: #f8fafc; padding: 6px 8px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-.roster-table td { padding: 3px 4px; border-bottom: 1px solid #f1f5f9; }
+.roster-table th { background: #ede6da; padding: 6px 8px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.roster-table td { padding: 3px 4px; border-bottom: 1px solid #ede6da; }
 .roster-table tr:last-child td { border-bottom: none; }
 .roster-num { width: 34px; text-align: center; color: var(--text-muted); font-size: 12px; }
 .roster-table input, .roster-table select { width: 100%; min-width: 80px; border: 1px solid transparent; background: transparent; padding: 7px 8px; font-size: 13px; border-radius: 5px; max-width: none; }
@@ -94,32 +84,40 @@ tr:last-child td { border-bottom: none; }
 .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0; }
 .hint { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
 
-/* Match list */
-.match-list { display: flex; flex-direction: column; gap: 5px; max-height: 320px; overflow-y: auto; }
-.match-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: #f8fafc; border-radius: 7px; border: 1px solid var(--border); flex-shrink: 0; }
+/* Match cards */
+.match-cards { display: flex; flex-direction: column; gap: 6px; }
+.match-card { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; }
+.match-card.played { background: #eff6ff; border-color: #bfdbfe; }
+.mc-name { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.mc-name.right { text-align: right; }
+.mc-bold { font-weight: 700; }
+.mc-score-wrap { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+.mc-score-input { width: 50px; text-align: center; padding: 5px 6px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-weight: 600; background: #fff; max-width: none; }
+.mc-dash { font-weight: 700; color: var(--text-muted); }
+.mc-result { font-weight: 700; font-size: 14px; color: var(--primary); padding: 3px 10px; background: #dbeafe; border-radius: 6px; min-width: 54px; text-align: center; }
+.mc-del { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; padding: 4px 7px; border-radius: 5px; line-height: 1; flex-shrink: 0; }
+.mc-del:hover { background: #fef2f2; color: var(--danger); }
+
+.match-list { display: flex; flex-direction: column; gap: 5px; }
+.match-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: #f5ede0; border-radius: 7px; border: 1px solid var(--border); }
 .match-teams { flex: 1; display: flex; align-items: center; gap: 6px; }
 .match-team { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .match-team.home { text-align: right; }
 .match-score { font-weight: 700; font-size: 14px; padding: 2px 10px; background: var(--card); border-radius: 5px; border: 1px solid var(--border); min-width: 52px; text-align: center; flex-shrink: 0; }
 
-/* Section head */
 .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .section-head h3 { font-size: .9rem; font-weight: 600; }
 
-/* Badge */
 .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
 .badge-blue { background: #eff6ff; color: var(--primary); border: 1px solid #bfdbfe; }
 .badge-green { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
 .badge-yellow { background: #fffbeb; color: var(--warning); border: 1px solid #fde68a; }
 
-/* Alert */
 .alert { padding: 10px 14px; border-radius: 7px; font-size: 13px; margin-bottom: 12px; }
 .alert-info { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
 
-/* Chips */
-.chip { display: inline-flex; align-items: center; gap: 5px; background: #f1f5f9; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 500; }
+.chip { display: inline-flex; align-items: center; gap: 5px; background: #ede6da; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 500; }
 
-/* Bracket */
 .bracket-wrap { overflow-x: auto; padding: 4px 0 12px; }
 .bracket { display: flex; align-items: flex-start; gap: 0; }
 .bracket-round { display: flex; flex-direction: column; min-width: 190px; }
@@ -127,7 +125,7 @@ tr:last-child td { border-bottom: none; }
 .bracket-matches { display: flex; flex-direction: column; flex: 1; justify-content: space-around; gap: 8px; padding: 0 0 8px; }
 .bracket-match { width: 182px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); cursor: pointer; transition: box-shadow .15s, border-color .15s; }
 .bracket-match:hover { box-shadow: var(--shadow-lg); border-color: var(--primary); }
-.bracket-slot { display: flex; align-items: center; padding: 7px 10px; gap: 8px; border-bottom: 1px solid var(--border); transition: background .15s; }
+.bracket-slot { display: flex; align-items: center; padding: 7px 10px; gap: 8px; border-bottom: 1px solid var(--border); }
 .bracket-slot:last-child { border-bottom: none; }
 .bracket-slot.winner { background: #f0fdf4; font-weight: 700; }
 .bracket-slot.tbd { color: var(--text-muted); font-style: italic; }
@@ -135,25 +133,24 @@ tr:last-child td { border-bottom: none; }
 .bracket-slot-score { font-weight: 700; font-size: 13px; min-width: 22px; text-align: center; }
 .bracket-spacer { min-width: 24px; display: flex; align-items: center; justify-content: center; color: var(--border); font-size: 18px; align-self: stretch; }
 
-/* Groups grid */
 .groups-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
 .group-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 .group-header { color: #fff; padding: 9px 14px; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: space-between; }
 .group-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.group-table th { background: #f8fafc; padding: 5px 8px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); font-size: 10px; text-transform: uppercase; }
-.group-table td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; }
+.group-table th { background: #ede6da; padding: 5px 8px; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); font-size: 10px; text-transform: uppercase; }
+.group-table td { padding: 6px 8px; border-bottom: 1px solid #ede6da; }
 .group-table tr:last-child td { border-bottom: none; }
 .group-table .advance td:first-child { border-left: 3px solid var(--success); }
 .group-table .pts { font-weight: 700; color: var(--primary); }
 
-/* Champion card */
-.champ-card { text-align: center; padding: 24px; background: linear-gradient(135deg, #fef9c3, #fde68a); border: 2px solid #fbbf24; border-radius: var(--radius); }
+.group-matches-block { margin-bottom: 14px; }
+.group-matches-header { font-weight: 600; font-size: 13px; color: #fff; border-radius: 6px 6px 0 0; padding: 7px 12px; }
+.group-matches-body { border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
 
-/* Empty state */
+.champ-card { text-align: center; padding: 24px; background: linear-gradient(135deg, #fef9c3, #fde68a); border: 2px solid #fbbf24; border-radius: var(--radius); }
 .empty { text-align: center; padding: 32px 20px; color: var(--text-muted); }
 .empty-icon { font-size: 2.5rem; margin-bottom: 8px; }
 
-/* Modal */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
 .modal { background: var(--card); border-radius: var(--radius); padding: 20px; width: 100%; max-width: 420px; box-shadow: var(--shadow-lg); }
 .modal-title { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
@@ -166,14 +163,15 @@ tr:last-child td { border-bottom: none; }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #c5b8a8; border-radius: 3px; }
 
 @media (max-width: 640px) {
   .header { flex-direction: column; align-items: flex-start; gap: 10px; }
   .tabs { width: 100%; }
-  .tab { flex: 1; text-align: center; padding: 6px 8px; font-size: 12px; }
+  .tab { flex: 1; text-align: center; padding: 6px 6px; font-size: 11px; }
   .bracket-round { min-width: 155px; }
   .bracket-match { width: 150px; }
+  .mc-name { max-width: 70px; }
 }
 </style>
 </head>
@@ -197,17 +195,15 @@ tr:last-child td { border-bottom: none; }
       <div>
         <div class="card">
           <div class="card-title"><span class="step-badge">1</span> Participantes</div>
-          <p class="hint">Escribí los jugadores en la tabla, como en Excel. Nombre y apellido en columnas separadas.</p>
           <div class="table-wrap">
             <table class="roster-table">
-              <thead><tr><th class="roster-num">#</th><th>Nombre</th><th>Apellido</th><th></th></tr></thead>
+              <thead><tr><th class="roster-num">#</th><th>Nombre del participante</th><th></th></tr></thead>
               <tbody id="ligaRosterBody"></tbody>
             </table>
           </div>
           <button class="btn btn-ghost btn-sm add-row-btn" onclick="ligaAddPlayer()">+ Agregar participante</button>
           <div class="roster-count" id="ligaCount"></div>
         </div>
-
         <div class="card">
           <div class="card-title"><span class="step-badge">2</span> Configuración</div>
           <div class="form-row">
@@ -225,41 +221,7 @@ tr:last-child td { border-bottom: none; }
             </div>
           </div>
         </div>
-
-        <div class="card">
-          <div class="card-title"><span class="step-badge">3</span> Cargar partido</div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Local</label>
-              <select id="ligaHome"></select>
-            </div>
-            <div class="form-group" style="max-width:70px;">
-              <label>Goles</label>
-              <input type="number" id="ligaHS" min="0" value="0">
-            </div>
-            <div class="form-group" style="max-width:70px;">
-              <label>Goles</label>
-              <input type="number" id="ligaAS" min="0" value="0">
-            </div>
-            <div class="form-group">
-              <label>Visitante</label>
-              <select id="ligaAway"></select>
-            </div>
-            <button class="btn btn-success" onclick="ligaAddMatch()">✓</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="section-head">
-            <h3>Resultados</h3>
-            <button class="btn btn-ghost btn-sm" onclick="ligaClearMatches()">Limpiar</button>
-          </div>
-          <div id="ligaMatchList" class="match-list">
-            <div class="empty"><div class="empty-icon">📋</div><p>Sin partidos aún</p></div>
-          </div>
-        </div>
       </div>
-
       <div>
         <div class="card">
           <div class="section-head">
@@ -274,6 +236,24 @@ tr:last-child td { border-bottom: none; }
             <span style="color:var(--danger);">■</span> Descienden
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-head">
+        <div style="display:flex;align-items:center;gap:8px;"><span class="step-badge">3</span><span style="font-weight:600;">Partidos</span></div>
+        <button class="btn btn-ghost btn-sm" onclick="ligaClearMatches()">Limpiar resultados</button>
+      </div>
+      <p class="hint">Todos los partidos del torneo. Ingresá los marcadores y tocá OK para guardar.</p>
+      <div id="ligaMatchCards" class="match-cards">
+        <div class="empty" style="padding:16px;"><p>Agregá al menos 2 participantes para ver los partidos</p></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Detalle del campeonato</div>
+      <div id="ligaDetail">
+        <div class="empty" style="padding:16px;"><p>Sin resultados cargados aún</p></div>
       </div>
     </div>
   </section>
@@ -299,60 +279,19 @@ tr:last-child td { border-bottom: none; }
             </div>
           </div>
         </div>
-
         <div class="card">
           <div class="card-title"><span class="step-badge">2</span> Participantes</div>
-          <p class="hint">Cargá los jugadores y asignales un grupo en cada fila.</p>
+          <p class="hint">Cargá los jugadores y asignales un grupo.</p>
           <div class="table-wrap">
             <table class="roster-table">
-              <thead><tr><th class="roster-num">#</th><th>Nombre</th><th>Apellido</th><th>Grupo</th><th></th></tr></thead>
+              <thead><tr><th class="roster-num">#</th><th>Nombre del participante</th><th>Grupo</th><th></th></tr></thead>
               <tbody id="gruposRosterBody"></tbody>
             </table>
           </div>
           <button class="btn btn-ghost btn-sm add-row-btn" onclick="gruposAddPlayer()">+ Agregar participante</button>
           <div class="roster-count" id="gruposCount"></div>
         </div>
-
-        <div class="card">
-          <div class="card-title"><span class="step-badge">3</span> Cargar partido</div>
-          <div class="form-row">
-            <div class="form-group" style="max-width:130px;">
-              <label>Grupo</label>
-              <select id="gruposMatchGrp" onchange="gruposFillMatchSelects()"></select>
-            </div>
-          </div>
-          <div class="form-row" style="margin-top:8px;">
-            <div class="form-group">
-              <label>Local</label>
-              <select id="gruposHome"></select>
-            </div>
-            <div class="form-group" style="max-width:70px;">
-              <label>Goles</label>
-              <input type="number" id="gruposHS" min="0" value="0">
-            </div>
-            <div class="form-group" style="max-width:70px;">
-              <label>Goles</label>
-              <input type="number" id="gruposAS" min="0" value="0">
-            </div>
-            <div class="form-group">
-              <label>Visitante</label>
-              <select id="gruposAway"></select>
-            </div>
-            <button class="btn btn-success" onclick="gruposAddMatch()">✓</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="section-head">
-            <h3>Partidos</h3>
-            <button class="btn btn-ghost btn-sm" onclick="gruposClearMatches()">Limpiar</button>
-          </div>
-          <div id="gruposMatchList" class="match-list">
-            <div class="empty"><div class="empty-icon">📋</div><p>Sin partidos</p></div>
-          </div>
-        </div>
       </div>
-
       <div>
         <div class="section-head">
           <h3>Grupos</h3>
@@ -369,6 +308,15 @@ tr:last-child td { border-bottom: none; }
         </div>
       </div>
     </div>
+
+    <div class="card">
+      <div class="section-head">
+        <div style="display:flex;align-items:center;gap:8px;"><span class="step-badge">3</span><span style="font-weight:600;">Partidos por grupo</span></div>
+        <button class="btn btn-ghost btn-sm" onclick="gruposClearMatches()">Limpiar resultados</button>
+      </div>
+      <p class="hint">Partidos de cada grupo. Ingresá los marcadores y tocá OK.</p>
+      <div id="gruposMatchCards"></div>
+    </div>
   </section>
 
   <!-- ===== ELIMINACIÓN ===== -->
@@ -377,10 +325,10 @@ tr:last-child td { border-bottom: none; }
       <div>
         <div class="card">
           <div class="card-title"><span class="step-badge">1</span> Participantes</div>
-          <p class="hint">El orden define los cruces de la llave. Usá «Sortear» para mezclarlos al azar.</p>
+          <p class="hint">El orden define los cruces. Usá «Sortear» para mezclarlos al azar.</p>
           <div class="table-wrap">
             <table class="roster-table">
-              <thead><tr><th class="roster-num">#</th><th>Nombre</th><th>Apellido</th><th></th></tr></thead>
+              <thead><tr><th class="roster-num">#</th><th>Nombre del participante</th><th></th></tr></thead>
               <tbody id="elimRosterBody"></tbody>
             </table>
           </div>
@@ -390,7 +338,6 @@ tr:last-child td { border-bottom: none; }
           </div>
           <div class="roster-count" id="elimCount"></div>
         </div>
-
         <div class="card">
           <div class="card-title"><span class="step-badge">2</span> Crear llave</div>
           <div class="form-row">
@@ -403,7 +350,6 @@ tr:last-child td { border-bottom: none; }
           <div id="elimSizeHint" class="hint" style="margin-top:10px;margin-bottom:0;"></div>
         </div>
       </div>
-
       <div>
         <div class="card">
           <div class="section-head">
@@ -426,21 +372,19 @@ tr:last-child td { border-bottom: none; }
   <!-- ===== MIXTO ===== -->
   <section id="mixto" class="tab-content">
     <div class="alert alert-info">
-      El formato <strong>Mixto</strong> toma los clasificados de la pestaña <strong>Grupos</strong> y genera automáticamente una llave de eliminación directa. Primero completá la fase de grupos, luego volvé aquí.
+      El formato <strong>Mixto</strong> toma los clasificados de <strong>Grupos</strong> y genera una llave eliminatoria. Completá la fase de grupos primero.
     </div>
-
     <div class="card">
       <div class="section-head">
         <h3>Estado del Torneo</h3>
         <div style="display:flex;gap:8px;align-items:center;">
           <span class="badge" id="mixtoPhase1Badge">1. Grupos</span>
           <span style="color:var(--text-muted);">→</span>
-          <span class="badge" id="mixtoPhase2Badge" style="background:#f1f5f9;color:var(--text-muted);">2. Eliminación</span>
+          <span class="badge" id="mixtoPhase2Badge" style="background:#ede6da;color:var(--text-muted);">2. Eliminación</span>
         </div>
       </div>
       <button class="btn btn-primary" onclick="mixtoGenerateBracket()">⚡ Generar llave con clasificados</button>
     </div>
-
     <div class="grid-2">
       <div>
         <div class="card">
@@ -486,7 +430,6 @@ tr:last-child td { border-bottom: none; }
 <div id="toastArea" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:6px;"></div>
 
 <script>
-// ─────────── UTILS ───────────
 const $ = id => document.getElementById(id);
 const sv = (k, v) => localStorage.setItem('t_' + k, JSON.stringify(v));
 const ld = (k, d) => { try { const r = localStorage.getItem('t_' + k); return r ? JSON.parse(r) : d; } catch { return d; } };
@@ -496,13 +439,6 @@ const isNamed = p => fullName(p).length > 0;
 function pName(players, id) { const p = players.find(x => x.id === id); return p ? fullName(p) : '?'; }
 const groupLetter = i => 'ABCDEFGH'[i] || ('G' + (i + 1));
 function esc(s) { return s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function fillSelect(sel, players, placeholder) {
-  const cur = sel.value;
-  sel.innerHTML = `<option value="">${placeholder}</option>` +
-    players.filter(isNamed).map(p => `<option value="${p.id}">${esc(fullName(p))}</option>`).join('');
-  if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
-}
 
 function toast(msg, type = 'info') {
   const el = document.createElement('div');
@@ -523,7 +459,7 @@ document.querySelectorAll('.tab').forEach(btn => {
   });
 });
 
-// ─────────── LIGA ───────────
+// ─── LIGA ───
 function migrateLiga(d) {
   if (!d) return { name: '', players: [], matches: [], qualify: 4, relegate: 0 };
   if (d.players) return d;
@@ -544,9 +480,10 @@ function ligaAddPlayer() {
   rows[rows.length - 1]?.querySelector('input')?.focus();
   ligaRefresh();
 }
-function ligaEditPlayer(id, field, val) {
+function ligaEditPlayer(id, val) {
   const p = L.players.find(x => x.id === id); if (!p) return;
-  p[field] = val; sv('liga', L);
+  p.nombre = val; p.apellido = '';
+  sv('liga', L);
   $('ligaCount').textContent = ligaCountText();
   ligaRefresh();
 }
@@ -557,28 +494,26 @@ function ligaDelPlayer(id) {
 }
 function ligaRenderRoster() {
   const tb = $('ligaRosterBody');
-  if (!L.players.length) { tb.innerHTML = '<tr><td colspan="4" class="roster-empty">Sin participantes todavía. Tocá «+ Agregar participante».</td></tr>'; $('ligaCount').textContent = ''; return; }
+  if (!L.players.length) { tb.innerHTML = '<tr><td colspan="3" class="roster-empty">Sin participantes. Tocá «+ Agregar participante».</td></tr>'; $('ligaCount').textContent = ''; return; }
   tb.innerHTML = L.players.map((p, i) => `<tr>
     <td class="roster-num">${i + 1}</td>
-    <td><input value="${esc(p.nombre)}" placeholder="Nombre" oninput="ligaEditPlayer('${p.id}','nombre',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();ligaAddPlayer();}"></td>
-    <td><input value="${esc(p.apellido)}" placeholder="Apellido" oninput="ligaEditPlayer('${p.id}','apellido',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();ligaAddPlayer();}"></td>
+    <td><input value="${esc(fullName(p))}" placeholder="Nombre del participante" oninput="ligaEditPlayer('${p.id}',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();ligaAddPlayer();}"></td>
     <td class="roster-del"><button onclick="ligaDelPlayer('${p.id}')" title="Eliminar">×</button></td>
   </tr>`).join('');
   $('ligaCount').textContent = ligaCountText();
 }
-function ligaRefresh() {
-  fillSelect($('ligaHome'), L.players, '-- Local --');
-  fillSelect($('ligaAway'), L.players, '-- Visitante --');
-  renderLigaTable(); renderLigaMatches();
-}
-function ligaAddMatch() {
-  const h = $('ligaHome').value, a = $('ligaAway').value;
-  const hs = +$('ligaHS').value, as_ = +$('ligaAS').value;
-  if (!h || !a) return toast('Elegí ambos participantes', 'error');
-  if (h === a) return toast('Deben ser distintos', 'error');
-  L.matches.push({ id: uid(), h, a, hs, as: as_ });
-  $('ligaHS').value = $('ligaAS').value = 0;
+function ligaRefresh() { renderLigaTable(); renderLigaMatchCards(); renderLigaDetail(); }
+
+function ligaSaveMatchCard(hid, aid) {
+  const hi = document.querySelector(`[data-mh="${hid}-${aid}"]`);
+  const ai = document.querySelector(`[data-ma="${hid}-${aid}"]`);
+  if (!hi || !ai) return;
+  const hs = +hi.value, as_ = +ai.value;
+  if (isNaN(hs) || isNaN(as_) || hs < 0 || as_ < 0) return toast('Puntajes inválidos', 'error');
+  L.matches = L.matches.filter(m => !((m.h === hid && m.a === aid) || (m.h === aid && m.a === hid)));
+  L.matches.push({ id: uid(), h: hid, a: aid, hs, as: as_ });
   sv('liga', L); ligaRefresh();
+  toast('Resultado guardado', 'success');
 }
 function ligaDeleteMatch(id) { L.matches = L.matches.filter(m => m.id !== id); sv('liga', L); ligaRefresh(); }
 function ligaClearMatches() { if (confirm('¿Borrar todos los resultados?')) { L.matches = []; sv('liga', L); ligaRefresh(); } }
@@ -588,6 +523,56 @@ function ligaReset() {
   $('ligaName').value = ''; $('ligaQualify').value = 4; $('ligaRelegate').value = 0;
   sv('liga', L); ligaRenderRoster(); ligaRefresh();
 }
+
+function renderLigaMatchCards() {
+  const named = L.players.filter(isNamed);
+  const el = $('ligaMatchCards');
+  if (named.length < 2) { el.innerHTML = '<div class="empty" style="padding:16px;"><p>Agregá al menos 2 participantes para ver los partidos</p></div>'; return; }
+  let html = '';
+  for (let i = 0; i < named.length; i++) {
+    for (let j = i + 1; j < named.length; j++) {
+      const p1 = named[i], p2 = named[j];
+      const m = L.matches.find(x => (x.h === p1.id && x.a === p2.id) || (x.h === p2.id && x.a === p1.id));
+      if (m) {
+        const hn = pName(L.players, m.h), an = pName(L.players, m.a);
+        const wh = m.hs > m.as, wa = m.hs < m.as;
+        html += `<div class="match-card played">
+          <span class="mc-name right${wh ? ' mc-bold' : ''}">${esc(hn)}</span>
+          <div class="mc-score-wrap"><span class="mc-result">${m.hs} - ${m.as}</span></div>
+          <span class="mc-name${wa ? ' mc-bold' : ''}">${esc(an)}</span>
+          <button class="mc-del" onclick="ligaDeleteMatch('${m.id}')" title="Borrar resultado">×</button>
+        </div>`;
+      } else {
+        html += `<div class="match-card">
+          <span class="mc-name right">${esc(fullName(p1))}</span>
+          <div class="mc-score-wrap">
+            <input type="number" class="mc-score-input" data-mh="${p1.id}-${p2.id}" min="0" value="0">
+            <span class="mc-dash">-</span>
+            <input type="number" class="mc-score-input" data-ma="${p1.id}-${p2.id}" min="0" value="0">
+          </div>
+          <span class="mc-name">${esc(fullName(p2))}</span>
+          <button class="btn-ok" onclick="ligaSaveMatchCard('${p1.id}','${p2.id}')">OK</button>
+        </div>`;
+      }
+    }
+  }
+  el.innerHTML = html;
+}
+
+function renderLigaDetail() {
+  const el = $('ligaDetail');
+  if (!L.matches.length) { el.innerHTML = '<div class="empty" style="padding:16px;"><p>Sin resultados cargados aún</p></div>'; return; }
+  el.innerHTML = '<div class="match-list">' + [...L.matches].reverse().map(x => {
+    const hn = pName(L.players, x.h), an = pName(L.players, x.a);
+    const w = x.hs > x.as ? 'home' : x.hs < x.as ? 'away' : 'draw';
+    return `<div class="match-item"><div class="match-teams">
+      <span class="match-team home" style="${w==='home'?'font-weight:700;':''}">${esc(hn)}</span>
+      <span class="match-score">${x.hs} - ${x.as}</span>
+      <span class="match-team" style="${w==='away'?'font-weight:700;':''}">${esc(an)}</span>
+    </div><button class="btn btn-ghost btn-sm" onclick="ligaDeleteMatch('${x.id}')">×</button></div>`;
+  }).join('') + '</div>';
+}
+
 function calcLiga() {
   const s = {};
   L.players.filter(isNamed).forEach(p => s[p.id] = { id: p.id, t: fullName(p), pj:0, pg:0, pe:0, pp:0, gf:0, gc:0, pts:0 });
@@ -605,7 +590,7 @@ function renderLigaTable() {
   const st = calcLiga();
   if (!st.length) { $('ligaTable').innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>Agregá participantes para ver la tabla</p></div>'; $('ligaLegend').style.display = 'none'; return; }
   const q = +$('ligaQualify').value || 0, r = +$('ligaRelegate').value || 0, n = st.length;
-  let html = '<div class="table-wrap"><table><thead><tr><th>#</th><th>Participante</th><th title="Puntos">Pts</th><th title="Jugados">PJ</th><th title="Ganados">PG</th><th title="Empatados">PE</th><th title="Perdidos">PP</th><th title="A favor">GF</th><th title="En contra">GC</th><th title="Diferencia">DG</th></tr></thead><tbody>';
+  let html = '<div class="table-wrap"><table><thead><tr><th>#</th><th>Participante</th><th>Pts</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th></tr></thead><tbody>';
   st.forEach((s, i) => {
     let cls = '';
     if (q > 0 && i < q) cls = 'qualify-zone';
@@ -617,21 +602,8 @@ function renderLigaTable() {
   $('ligaTable').innerHTML = html;
   $('ligaLegend').style.display = (q > 0 || r > 0) ? 'block' : 'none';
 }
-function renderLigaMatches() {
-  const m = L.matches;
-  if (!m.length) { $('ligaMatchList').innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Sin partidos aún</p></div>'; return; }
-  $('ligaMatchList').innerHTML = [...m].reverse().slice(0, 80).map(x => {
-    const hn = pName(L.players, x.h), an = pName(L.players, x.a);
-    const w = x.hs > x.as ? 'home' : x.hs < x.as ? 'away' : 'draw';
-    return `<div class="match-item"><div class="match-teams">
-      <span class="match-team home" style="${w==='home'?'font-weight:700;':''}">${esc(hn)}</span>
-      <span class="match-score">${x.hs} - ${x.as}</span>
-      <span class="match-team" style="${w==='away'?'font-weight:700;':''}">${esc(an)}</span>
-    </div><button class="btn btn-ghost btn-sm" onclick="ligaDeleteMatch('${x.id}')">×</button></div>`;
-  }).join('');
-}
 
-// ─────────── GRUPOS ───────────
+// ─── GRUPOS ───
 function migrateGrupos(d) {
   if (!d) return { name: '', numGroups: 4, adv: 2, players: [], matches: [] };
   if (d.players) return d;
@@ -663,7 +635,7 @@ function gruposAddPlayer() {
 function gruposEditPlayer(id, field, val) {
   const p = G.players.find(x => x.id === id); if (!p) return;
   if (field === 'grupo') { p.grupo = +val; G.matches = G.matches.filter(m => m.h !== id && m.a !== id); }
-  else p[field] = val;
+  else { p.nombre = val; p.apellido = ''; }
   sv('grupos', G);
   $('gruposCount').textContent = gruposCountText();
   gruposRefresh();
@@ -675,43 +647,32 @@ function gruposDelPlayer(id) {
 }
 function gruposRenderRoster() {
   const tb = $('gruposRosterBody');
-  if (!G.players.length) { tb.innerHTML = '<tr><td colspan="5" class="roster-empty">Sin participantes todavía. Tocá «+ Agregar participante».</td></tr>'; $('gruposCount').textContent = ''; return; }
+  if (!G.players.length) { tb.innerHTML = '<tr><td colspan="4" class="roster-empty">Sin participantes. Tocá «+ Agregar participante».</td></tr>'; $('gruposCount').textContent = ''; return; }
   tb.innerHTML = G.players.map((p, i) => {
     let opts = '';
     for (let g = 0; g < G.numGroups; g++) opts += `<option value="${g}" ${p.grupo === g ? 'selected' : ''}>Grupo ${groupLetter(g)}</option>`;
     return `<tr>
       <td class="roster-num">${i + 1}</td>
-      <td><input value="${esc(p.nombre)}" placeholder="Nombre" oninput="gruposEditPlayer('${p.id}','nombre',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();gruposAddPlayer();}"></td>
-      <td><input value="${esc(p.apellido)}" placeholder="Apellido" oninput="gruposEditPlayer('${p.id}','apellido',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();gruposAddPlayer();}"></td>
+      <td><input value="${esc(fullName(p))}" placeholder="Nombre del participante" oninput="gruposEditPlayer('${p.id}','nombre',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();gruposAddPlayer();}"></td>
       <td><select onchange="gruposEditPlayer('${p.id}','grupo',this.value)">${opts}</select></td>
       <td class="roster-del"><button onclick="gruposDelPlayer('${p.id}')" title="Eliminar">×</button></td>
     </tr>`;
   }).join('');
   $('gruposCount').textContent = gruposCountText();
 }
-function gruposMatchGrpOptions() { let o = ''; for (let i = 0; i < G.numGroups; i++) o += `<option value="${i}">Grupo ${groupLetter(i)}</option>`; return o; }
-function gruposFillMatchSelects() {
-  const gi = +$('gruposMatchGrp').value || 0;
-  const ps = G.players.filter(p => p.grupo === gi);
-  fillSelect($('gruposHome'), ps, '-- Local --');
-  fillSelect($('gruposAway'), ps, '-- Visitante --');
-}
-function gruposRefresh() {
-  const cur = $('gruposMatchGrp').value;
-  $('gruposMatchGrp').innerHTML = gruposMatchGrpOptions();
-  if ([...$('gruposMatchGrp').options].some(o => o.value === cur)) $('gruposMatchGrp').value = cur;
-  gruposFillMatchSelects();
-  renderGruposGrid(); renderGruposMatches(); renderGruposClassified();
-}
-function gruposAddMatch() {
-  const gi = +$('gruposMatchGrp').value || 0;
-  const h = $('gruposHome').value, a = $('gruposAway').value;
-  const hs = +$('gruposHS').value, as_ = +$('gruposAS').value;
-  if (!h || !a) return toast('Elegí ambos participantes', 'error');
-  if (h === a) return toast('Deben ser distintos', 'error');
-  G.matches.push({ id: uid(), h, a, hs, as: as_, gi });
-  $('gruposHS').value = $('gruposAS').value = 0;
+function gruposRefresh() { renderGruposGrid(); renderGruposMatchCards(); renderGruposClassified(); }
+
+function gruposSaveMatchCard(gi, hid, aid) {
+  const key = `${gi}-${hid}-${aid}`;
+  const hi = document.querySelector(`[data-gmh="${key}"]`);
+  const ai = document.querySelector(`[data-gma="${key}"]`);
+  if (!hi || !ai) return;
+  const hs = +hi.value, as_ = +ai.value;
+  if (isNaN(hs) || isNaN(as_) || hs < 0 || as_ < 0) return toast('Puntajes inválidos', 'error');
+  G.matches = G.matches.filter(m => !((m.h === hid && m.a === aid) || (m.h === aid && m.a === hid)));
+  G.matches.push({ id: uid(), h: hid, a: aid, hs, as: as_, gi });
   sv('grupos', G); gruposRefresh();
+  toast('Resultado guardado', 'success');
 }
 function gruposDeleteMatch(id) { G.matches = G.matches.filter(m => m.id !== id); sv('grupos', G); gruposRefresh(); }
 function gruposClearMatches() { if (confirm('¿Borrar todos los partidos?')) { G.matches = []; sv('grupos', G); gruposRefresh(); } }
@@ -721,6 +682,52 @@ function gruposReset() {
   $('gruposName').value = ''; $('gruposNum').value = 4; $('gruposAdv').value = 2;
   sv('grupos', G); gruposRenderRoster(); gruposRefresh();
 }
+
+function renderGruposMatchCards() {
+  const el = $('gruposMatchCards');
+  let html = '';
+  for (let gi = 0; gi < G.numGroups; gi++) {
+    const ps = G.players.filter(p => p.grupo === gi && isNamed(p));
+    if (ps.length < 2) continue;
+    const color = GRP_COLORS[gi % GRP_COLORS.length];
+    let inner = '';
+    for (let i = 0; i < ps.length; i++) {
+      for (let j = i + 1; j < ps.length; j++) {
+        const p1 = ps[i], p2 = ps[j];
+        const m = G.matches.find(x => (x.h === p1.id && x.a === p2.id) || (x.h === p2.id && x.a === p1.id));
+        const key = `${gi}-${p1.id}-${p2.id}`;
+        if (m) {
+          const hn = pName(G.players, m.h), an = pName(G.players, m.a);
+          const wh = m.hs > m.as, wa = m.hs < m.as;
+          inner += `<div class="match-card played">
+            <span class="mc-name right${wh?' mc-bold':''}">${esc(hn)}</span>
+            <div class="mc-score-wrap"><span class="mc-result">${m.hs} - ${m.as}</span></div>
+            <span class="mc-name${wa?' mc-bold':''}">${esc(an)}</span>
+            <button class="mc-del" onclick="gruposDeleteMatch('${m.id}')" title="Borrar resultado">×</button>
+          </div>`;
+        } else {
+          inner += `<div class="match-card">
+            <span class="mc-name right">${esc(fullName(p1))}</span>
+            <div class="mc-score-wrap">
+              <input type="number" class="mc-score-input" data-gmh="${key}" min="0" value="0">
+              <span class="mc-dash">-</span>
+              <input type="number" class="mc-score-input" data-gma="${key}" min="0" value="0">
+            </div>
+            <span class="mc-name">${esc(fullName(p2))}</span>
+            <button class="btn-ok" onclick="gruposSaveMatchCard(${gi},'${p1.id}','${p2.id}')">OK</button>
+          </div>`;
+        }
+      }
+    }
+    html += `<div class="group-matches-block">
+      <div class="group-matches-header" style="background:${color};">Grupo ${groupLetter(gi)}</div>
+      <div class="group-matches-body">${inner}</div>
+    </div>`;
+  }
+  if (!html) el.innerHTML = '<div class="empty" style="padding:16px;"><p>Asigná al menos 2 participantes por grupo para ver los partidos</p></div>';
+  else el.innerHTML = html;
+}
+
 function calcGroupStandings(gi) {
   const s = {};
   G.players.filter(p => p.grupo === gi && isNamed(p)).forEach(p => s[p.id] = { id: p.id, t: fullName(p), pj:0, pg:0, pe:0, pp:0, gf:0, gc:0, pts:0 });
@@ -756,20 +763,6 @@ function renderGruposGrid() {
   }
   $('gruposGrid').innerHTML = html;
 }
-function renderGruposMatches() {
-  const m = G.matches;
-  if (!m.length) { $('gruposMatchList').innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Sin partidos</p></div>'; return; }
-  $('gruposMatchList').innerHTML = [...m].reverse().slice(0, 80).map(x => {
-    const hn = pName(G.players, x.h), an = pName(G.players, x.a);
-    const w = x.hs > x.as ? 'home' : x.hs < x.as ? 'away' : 'draw';
-    const color = GRP_COLORS[x.gi % GRP_COLORS.length];
-    return `<div class="match-item"><span style="width:20px;height:20px;border-radius:4px;background:${color};flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">${groupLetter(x.gi)}</span><div class="match-teams">
-      <span class="match-team home" style="${w==='home'?'font-weight:700;':''}">${esc(hn)}</span>
-      <span class="match-score">${x.hs} - ${x.as}</span>
-      <span class="match-team" style="${w==='away'?'font-weight:700;':''}">${esc(an)}</span>
-    </div><button class="btn btn-ghost btn-sm" onclick="gruposDeleteMatch('${x.id}')">×</button></div>`;
-  }).join('');
-}
 function renderGruposClassified() {
   const cl = getGruposClassified();
   if (!cl.length) { $('gruposClassified').innerHTML = '<div class="empty" style="padding:16px;"><p>Completá los partidos para ver clasificados</p></div>'; return; }
@@ -784,7 +777,7 @@ function renderGruposClassified() {
   $('gruposClassified').innerHTML = html;
 }
 
-// ─────────── ELIMINACIÓN ───────────
+// ─── ELIMINACIÓN ───
 function migrateElim(d) {
   if (!d) return { name: '', players: [], rounds: [] };
   if (d.players) return d;
@@ -801,7 +794,7 @@ function elimSizeHint() {
   const n = E.players.filter(isNamed).length;
   if (n < 2) { $('elimSizeHint').textContent = 'Agregá al menos 2 participantes para crear la llave.'; return; }
   const size = nextPow2(n);
-  $('elimSizeHint').textContent = `${n} participantes → llave de ${size}${size > n ? ` (${size - n} lugares libres quedan como "BYE", pasan directo)` : ''}.`;
+  $('elimSizeHint').textContent = `${n} participantes → llave de ${size}${size > n ? ` (${size - n} lugares libres pasan directo)` : ''}.`;
 }
 function elimAddPlayer() {
   E.players.push({ id: uid(), nombre: '', apellido: '' });
@@ -810,24 +803,23 @@ function elimAddPlayer() {
   rows[rows.length - 1]?.querySelector('input')?.focus();
   elimSizeHint();
 }
-function elimEditPlayer(id, field, val) {
+function elimEditPlayer(id, val) {
   const p = E.players.find(x => x.id === id); if (!p) return;
-  p[field] = val; sv('elim', E);
+  p.nombre = val; p.apellido = '';
+  sv('elim', E);
   $('elimCount').textContent = elimCountText(); elimSizeHint();
 }
 function elimDelPlayer(id) { E.players = E.players.filter(x => x.id !== id); sv('elim', E); elimRenderRoster(); elimSizeHint(); }
 function elimShuffle() {
   for (let i = E.players.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[E.players[i], E.players[j]] = [E.players[j], E.players[i]]; }
-  sv('elim', E); elimRenderRoster();
-  toast('¡Orden mezclado!', 'success');
+  sv('elim', E); elimRenderRoster(); toast('¡Orden mezclado!', 'success');
 }
 function elimRenderRoster() {
   const tb = $('elimRosterBody');
-  if (!E.players.length) { tb.innerHTML = '<tr><td colspan="4" class="roster-empty">Sin participantes todavía. Tocá «+ Agregar participante».</td></tr>'; $('elimCount').textContent = ''; return; }
+  if (!E.players.length) { tb.innerHTML = '<tr><td colspan="3" class="roster-empty">Sin participantes. Tocá «+ Agregar participante».</td></tr>'; $('elimCount').textContent = ''; return; }
   tb.innerHTML = E.players.map((p, i) => `<tr>
     <td class="roster-num">${i + 1}</td>
-    <td><input value="${esc(p.nombre)}" placeholder="Nombre" oninput="elimEditPlayer('${p.id}','nombre',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();elimAddPlayer();}"></td>
-    <td><input value="${esc(p.apellido)}" placeholder="Apellido" oninput="elimEditPlayer('${p.id}','apellido',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();elimAddPlayer();}"></td>
+    <td><input value="${esc(fullName(p))}" placeholder="Nombre del participante" oninput="elimEditPlayer('${p.id}',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();elimAddPlayer();}"></td>
     <td class="roster-del"><button onclick="elimDelPlayer('${p.id}')" title="Eliminar">×</button></td>
   </tr>`).join('');
   $('elimCount').textContent = elimCountText();
@@ -838,40 +830,35 @@ function elimInit() {
   const size = nextPow2(named.length);
   if (!confirm(`¿Crear llave de ${size} con tus ${named.length} participantes?`)) return;
   E.rounds = buildBracket(named.map(fullName), size);
-  sv('elim', E); renderElim();
-  toast('Llave creada', 'success');
+  sv('elim', E); renderElim(); toast('Llave creada', 'success');
 }
 function elimReset() {
-  if (!confirm('¿Borrar la llave? (Los participantes se conservan.)')) return;
+  if (!confirm('¿Borrar la llave? Los participantes se conservan.')) return;
   E.rounds = []; sv('elim', E); renderElim();
 }
 function renderElim() {
   elimRenderRoster(); elimSizeHint();
-  if (!E.rounds.length) {
-    $('elimBracket').innerHTML = '<div class="empty"><div class="empty-icon">⚔️</div><p>Cargá participantes y tocá «Crear llave»</p></div>';
-    $('elimChampCard').classList.add('hidden'); return;
-  }
+  if (!E.rounds.length) { $('elimBracket').innerHTML = '<div class="empty"><div class="empty-icon">⚔️</div><p>Cargá participantes y tocá «Crear llave»</p></div>'; $('elimChampCard').classList.add('hidden'); return; }
   $('elimBracket').innerHTML = bracketHTML(E.rounds, 'elim');
   const last = E.rounds[E.rounds.length - 1];
   if (last && last[0] && last[0].w) { $('elimChampCard').classList.remove('hidden'); $('elimChampName').textContent = last[0].w; }
   else $('elimChampCard').classList.add('hidden');
 }
 
-// ─────────── MIXTO ───────────
+// ─── MIXTO ───
 let MX = ld('mixto', { rounds: [] });
 function mixtoGenerateBracket() {
   const cl = getGruposClassified();
   if (!cl.length) return toast('No hay clasificados. Completá la fase de grupos primero.', 'error');
   MX.rounds = buildBracket(cl.map(s => s.t), nextPow2(cl.length));
-  sv('mixto', MX); renderMixto();
-  toast(`Llave generada con ${cl.length} clasificados`, 'success');
+  sv('mixto', MX); renderMixto(); toast(`Llave generada con ${cl.length} clasificados`, 'success');
 }
 function mixtoResetBracket() { if (!confirm('¿Resetear llave mixta?')) return; MX.rounds = []; sv('mixto', MX); renderMixto(); }
 function renderMixto() {
   const cl = getGruposClassified();
   if (cl.length) {
     $('mixtoPhase1Badge').className = 'badge badge-green';
-    $('mixtoClassified').innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:5px;">' + cl.map((s, i) => `<span class="chip" style="background:#f0fdf4;border:1px solid #bbf7d0;">${i+1}. ${esc(s.t)}</span>`).join('') + '</div>';
+    $('mixtoClassified').innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:5px;">' + cl.map((s, i) => `<span class="chip">${i+1}. ${esc(s.t)}</span>`).join('') + '</div>';
   } else {
     $('mixtoPhase1Badge').className = 'badge';
     $('mixtoClassified').innerHTML = '<div class="empty" style="padding:16px;"><p>Completá la fase de grupos en la pestaña <strong>Grupos</strong></p></div>';
@@ -889,7 +876,7 @@ function renderMixto() {
   }
 }
 
-// ─────────── BRACKET ENGINE ───────────
+// ─── BRACKET ENGINE ───
 function buildBracket(teamList, size) {
   const seeded = [...teamList].slice(0, size);
   while (seeded.length < size) seeded.push(null);
@@ -948,7 +935,7 @@ function bracketHTML(rounds, source) {
   return html;
 }
 
-// ─────────── SCORE MODAL ───────────
+// ─── SCORE MODAL ───
 function openModal(source, ri, mi) {
   const rounds = source === 'mixto' ? MX.rounds : E.rounds;
   if (!rounds || !rounds[ri]) return;
@@ -982,7 +969,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !$('scoreModal').classList.contains('hidden')) { e.preventDefault(); confirmScore(); }
 });
 
-// ─────────── INIT ───────────
+// ─── INIT ───
 (function init() {
   if (L.name) $('ligaName').value = L.name;
   $('ligaQualify').value = L.qualify ?? 4;
