@@ -264,6 +264,11 @@ function crearHojaAsistenciaPagos(ss) {
   var sh = obtenerHoja(ss, '📅 Asistencia y Pagos');
   sh.setTabColor(COL.green);
 
+  // Expandir hoja a 34 columnas (A hasta AH: 1 nombre + 31 días + % + pago)
+  if (sh.getMaxColumns() < 34) {
+    sh.insertColumnsAfter(sh.getMaxColumns(), 34 - sh.getMaxColumns());
+  }
+
   // Ancho columna A, B-AF (días, 30px), AG, AH
   sh.setColumnWidth(1, 180);
   for (var d = 2; d <= 32; d++) { sh.setColumnWidth(d, 30); }
