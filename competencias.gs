@@ -40,25 +40,31 @@ function setupCompetencias() {
 function obtenerHoja(ss, nombre) {
   var h = ss.getSheetByName(nombre);
   if (h) ss.deleteSheet(h);
-  return ss.insertSheet(nombre);
+  var sh = ss.insertSheet(nombre);
+  sh.setHiddenGridlines(true);
+  return sh;
 }
 
 function titulo(sh, texto, numCols) {
   sh.getRange(1, 1, 1, numCols).merge()
     .setValue(texto)
     .setBackground(C.azul).setFontColor('#fff')
-    .setFontWeight('bold').setFontSize(15)
+    .setFontFamily('Poppins')
+    .setFontWeight('bold').setFontSize(19)
     .setHorizontalAlignment('center').setVerticalAlignment('middle');
-  sh.setRowHeight(1, 42);
+  sh.setRowHeight(1, 50);
+  sh.getRange(1, 1, 1, numCols)
+    .setBorder(false, false, true, false, false, false, C.amarillo, SpreadsheetApp.BorderStyle.SOLID_THICK);
 }
 
-function seccion(sh, fila, colInicio, texto, colspan) {
+function seccion(sh, fila, colInicio, texto, colspan, color) {
+  color = color || C.azul;
   sh.getRange(fila, colInicio, 1, colspan).merge()
     .setValue(texto)
-    .setBackground(C.crema).setFontColor('#1e293b')
-    .setFontWeight('bold').setFontSize(10)
-    .setBorder(false,false,true,false,false,false, '#ddd3c3', SpreadsheetApp.BorderStyle.SOLID);
-  sh.setRowHeight(fila, 24);
+    .setBackground(color).setFontColor('#ffffff')
+    .setFontWeight('bold').setFontSize(11)
+    .setHorizontalAlignment('center').setVerticalAlignment('middle');
+  sh.setRowHeight(fila, 27);
 }
 
 function encabezados(sh, fila, colInicio, cabeceras, bgColor) {
@@ -68,10 +74,14 @@ function encabezados(sh, fila, colInicio, cabeceras, bgColor) {
     sh.getRange(fila, colInicio + i)
       .setValue(h)
       .setBackground(bgColor).setFontColor(fgColor)
-      .setFontWeight('bold').setFontSize(9)
+      .setFontWeight('bold').setFontSize(10)
       .setHorizontalAlignment('center').setVerticalAlignment('middle');
   });
-  sh.setRowHeight(fila, 28);
+  sh.setRowHeight(fila, 30);
+}
+
+function tarjeta(sh, rango, color) {
+  sh.getRange(rango).setBorder(true, true, true, true, false, false, color, SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
 }
 
 function eliminarHojaDefault(ss) {
@@ -86,6 +96,7 @@ function eliminarHojaDefault(ss) {
 // ============================================================
 function crearHojaLiga(ss) {
   var sh = obtenerHoja(ss, '📊 Liga');
+  sh.setTabColor(C.azul);
 
   // anchos: A(#) B(nombre) C(gap) D(local) E(golL) F(golV) G(visit) H(gap) I(#) J(nombre) K(pts) L-R(stats)
   var anchos = [35, 175, 18, 175, 65, 65, 175, 18, 35, 175, 52, 42, 42, 42, 42, 45, 45, 52];
@@ -94,16 +105,17 @@ function crearHojaLiga(ss) {
   titulo(sh, '🏆 LIGA — Todos contra todos', 18);
 
   // ── Participantes ──
-  seccion(sh, 2, 1, '① PARTICIPANTES', 2);
+  seccion(sh, 2, 1, '① PARTICIPANTES', 2, C.azul);
   encabezados(sh, 3, 1, ['#', 'Nombre del participante']);
   sh.getRange(3, 2).setHorizontalAlignment('left');
 
   for (var i = 1; i <= 30; i++) {
     var r = i + 3;
     sh.getRange(r, 1).setValue(i).setFontColor(C.grisT).setHorizontalAlignment('center').setFontSize(10);
-    sh.getRange(r, 2).setBackground(i % 2 ? C.blanco : C.gris).setFontSize(11);
-    sh.setRowHeight(r, 22);
+    sh.getRange(r, 2).setBackground(i % 2 ? C.blanco : C.gris).setFontSize(12);
+    sh.setRowHeight(r, 23);
   }
+  tarjeta(sh, 'A3:B33', C.azul);
 
   // Dropdown local/visitante desde lista de participantes
   var listaJugadores = sh.getRange('$B$4:$B$33');
@@ -112,20 +124,21 @@ function crearHojaLiga(ss) {
   sh.getRange('G4:G300').setDataValidation(reglaDrop);
 
   // ── Partidos ──
-  seccion(sh, 2, 4, '② PARTIDOS — Ingresá los marcadores acá', 4);
+  seccion(sh, 2, 4, '② PARTIDOS — Ingresá los marcadores acá', 4, C.verde);
   encabezados(sh, 3, 4, ['LOCAL', 'GOL L', 'GOL V', 'VISITANTE']);
   sh.getRange(3, 5).setHorizontalAlignment('center');
   sh.getRange(3, 6).setHorizontalAlignment('center');
 
   for (var j = 4; j <= 300; j++) {
     sh.getRange(j, 4, 1, 4).setBackground(j % 2 ? C.blanco : C.gris);
-    sh.getRange(j, 5).setHorizontalAlignment('center');
-    sh.getRange(j, 6).setHorizontalAlignment('center');
+    sh.getRange(j, 5).setHorizontalAlignment('center').setFontWeight('bold').setFontColor(C.azul);
+    sh.getRange(j, 6).setHorizontalAlignment('center').setFontWeight('bold').setFontColor(C.azul);
     sh.setRowHeight(j, 22);
   }
+  tarjeta(sh, 'D3:G300', C.verde);
 
   // ── Tabla de Posiciones ──
-  seccion(sh, 2, 9, '③ TABLA DE POSICIONES', 10);
+  seccion(sh, 2, 9, '③ TABLA DE POSICIONES', 10, C.amarillo);
   encabezados(sh, 3, 9, ['#', 'PARTICIPANTE', 'PTS', 'PJ', 'PG', 'PE', 'PP', 'GF', 'GC', 'DG']);
   sh.getRange(3, 10).setHorizontalAlignment('left');
 
@@ -180,6 +193,8 @@ function crearHojaLiga(ss) {
     sh.setRowHeight(row, 22);
   }
 
+  tarjeta(sh, 'I3:R33', C.amarillo);
+
   // Tip de ordenamiento
   sh.getRange('A36').setValue('💡 Para ver la tabla ordenada: seleccioná I3:R33 → Datos → Ordenar rango por columna K (PTS), de mayor a menor.')
     .setFontColor(C.grisT).setFontSize(9).setFontStyle('italic');
@@ -193,6 +208,7 @@ function crearHojaLiga(ss) {
 // ============================================================
 function crearHojaGrupos(ss) {
   var sh = obtenerHoja(ss, '👥 Grupos');
+  sh.setTabColor('#7c3aed');
 
   var anchos = [35, 100, 170, 18, 170, 65, 65, 170, 80];
   anchos.forEach(function(w, i) { sh.setColumnWidth(i + 1, w); });
@@ -211,7 +227,7 @@ function crearHojaGrupos(ss) {
   sh.setRowHeight(2, 28);
 
   // ── Participantes ──
-  seccion(sh, 3, 1, '① PARTICIPANTES — asignales un grupo', 3);
+  seccion(sh, 3, 1, '① PARTICIPANTES — asignales un grupo', 3, '#7c3aed');
   encabezados(sh, 4, 1, ['#', 'GRUPO', 'NOMBRE']);
   sh.getRange(4, 2).setHorizontalAlignment('center');
   sh.getRange(4, 3).setHorizontalAlignment('left');
@@ -222,13 +238,14 @@ function crearHojaGrupos(ss) {
   for (var i = 1; i <= 32; i++) {
     var r = i + 4;
     sh.getRange(r, 1).setValue(i).setFontColor(C.grisT).setHorizontalAlignment('center').setFontSize(10);
-    sh.getRange(r, 2).setDataValidation(reglaGrupo).setValue('Grupo A').setHorizontalAlignment('center').setFontSize(10);
-    sh.getRange(r, 3).setBackground(i % 2 ? C.blanco : C.gris).setFontSize(11);
-    sh.setRowHeight(r, 22);
+    sh.getRange(r, 2).setDataValidation(reglaGrupo).setValue('Grupo A').setHorizontalAlignment('center').setFontSize(10).setFontColor('#7c3aed').setFontWeight('bold');
+    sh.getRange(r, 3).setBackground(i % 2 ? C.blanco : C.gris).setFontSize(12);
+    sh.setRowHeight(r, 23);
   }
+  tarjeta(sh, 'A4:C36', '#7c3aed');
 
   // ── Partidos ──
-  seccion(sh, 3, 5, '② PARTIDOS — incluí el grupo en col I', 5);
+  seccion(sh, 3, 5, '② PARTIDOS — incluí el grupo en col I', 5, C.verde);
   encabezados(sh, 4, 5, ['LOCAL', 'GOL L', 'GOL V', 'VISITANTE', 'GRUPO']);
   sh.getRange(4, 6).setHorizontalAlignment('center');
   sh.getRange(4, 7).setHorizontalAlignment('center');
@@ -238,11 +255,12 @@ function crearHojaGrupos(ss) {
 
   for (var j = 5; j <= 200; j++) {
     sh.getRange(j, 5, 1, 5).setBackground(j % 2 ? C.blanco : C.gris);
-    sh.getRange(j, 6).setHorizontalAlignment('center');
-    sh.getRange(j, 7).setHorizontalAlignment('center');
+    sh.getRange(j, 6).setHorizontalAlignment('center').setFontWeight('bold').setFontColor(C.azul);
+    sh.getRange(j, 7).setHorizontalAlignment('center').setFontWeight('bold').setFontColor(C.azul);
     sh.getRange(j, 9).setDataValidation(reglaGrupoPartido).setHorizontalAlignment('center');
     sh.setRowHeight(j, 22);
   }
+  tarjeta(sh, 'E4:I200', C.verde);
 
   sh.setFrozenRows(4);
 
@@ -306,6 +324,8 @@ function crearHojaGrupos(ss) {
 
       sh.setRowHeight(pRow, 22);
     }
+
+    tarjeta(sh, sh.getRange(rowBase, colBase, 10, 4).getA1Notation(), gColor);
   }
 }
 
@@ -314,6 +334,7 @@ function crearHojaGrupos(ss) {
 // ============================================================
 function crearHojaEliminacion(ss) {
   var sh = obtenerHoja(ss, '⚔️ Eliminación');
+  sh.setTabColor(C.amarillo);
 
   // Anchos: A(lista#) B(lista nombre) C(gap) D(equipo) E(score) F(vs) G(score) H(equipo) I(ganador)
   var anchos = [35, 165, 20, 165, 55, 35, 55, 165, 165];
@@ -337,18 +358,19 @@ function crearHojaEliminacion(ss) {
   });
 
   // Lista de participantes
-  seccion(sh, 7, 1, 'PARTICIPANTES', 2);
+  seccion(sh, 7, 1, 'PARTICIPANTES', 2, C.azul);
   encabezados(sh, 8, 1, ['#', 'Nombre']);
   sh.getRange(8, 2).setHorizontalAlignment('left');
   for (var i = 1; i <= 16; i++) {
     sh.getRange(i + 8, 1).setValue(i).setFontColor(C.grisT).setHorizontalAlignment('center');
-    sh.getRange(i + 8, 2).setBackground(i % 2 ? C.blanco : C.gris).setFontSize(11);
-    sh.setRowHeight(i + 8, 22);
+    sh.getRange(i + 8, 2).setBackground(i % 2 ? C.blanco : C.gris).setFontSize(12);
+    sh.setRowHeight(i + 8, 23);
   }
+  tarjeta(sh, 'A8:B24', C.azul);
 
   // Estructura de partidos (col D en adelante)
   var rondas = ['CUARTOS DE FINAL', 'SEMIFINALES', 'FINAL'];
-  seccion(sh, 7, 4, 'BRACKET', 6);
+  seccion(sh, 7, 4, 'BRACKET', 6, C.amarillo);
   encabezados(sh, 8, 4, ['EQUIPO 1', 'GOL', 'vs', 'GOL', 'EQUIPO 2', 'GANADOR']);
   sh.getRange(8, 6).setValue('vs').setHorizontalAlignment('center');
 
@@ -405,6 +427,8 @@ function crearHojaEliminacion(ss) {
   sh.setRowHeight(champRow, 32);
   sh.setRowHeight(champRow + 1, 40);
 
+  tarjeta(sh, sh.getRange(8, 4, champRow - 6, 6).getA1Notation(), C.amarillo);
+
   sh.setFrozenRows(8);
 }
 
@@ -413,6 +437,7 @@ function crearHojaEliminacion(ss) {
 // ============================================================
 function crearHojaMixto(ss) {
   var sh = obtenerHoja(ss, '🔀 Mixto');
+  sh.setTabColor('#db2777');
 
   var anchos = [35, 200, 100, 35, 200, 100];
   anchos.forEach(function(w, i) { sh.setColumnWidth(i + 1, w); });
@@ -470,6 +495,8 @@ function crearHojaMixto(ss) {
       sh.setRowHeight(dRow2, 24);
     }
   }
+
+  tarjeta(sh, 'A7:F16', '#db2777');
 
   sh.getRange('A17:F17').merge()
     .setValue('💡 Completá los nombres de los clasificados arriba, luego copiálos a ⚔️ Eliminación.')
