@@ -366,7 +366,6 @@ function crearHojaAsistenciaPagos(ss) {
   sh.setConditionalFormatRules(reglas);
 
   sh.setFrozenRows(4);
-  sh.setFrozenColumns(1);
   sh.setHiddenGridlines(true);
 }
 
